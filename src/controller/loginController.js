@@ -1,3 +1,5 @@
+import { encrypt } from '../helpers/cypher'
+
 const login = ({ email, pass }) => {
   if (email && pass) {
     if (email.charAt(0) === 'a') {
@@ -11,7 +13,7 @@ const login = ({ email, pass }) => {
       return {
         code: 200,
         message: {
-          token: pass + email
+          token: encrypt(`${email};${new Date().toISOString()}`)
         }
       }
     }
