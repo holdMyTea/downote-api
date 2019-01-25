@@ -3,7 +3,9 @@ import morgan from 'morgan'
 import bodyParser from 'body-parser'
 // import cookieParser from 'cookie-parser'
 
+import env from './config/environment'
 import loginRoute from './routes/loginRoute'
+import db from './services/db'
 
 const app = express()
 
@@ -19,6 +21,13 @@ app.use((req, res, next) => {
 app.get('/', (request, response) => response.send('Server here'))
 app.use('/login', loginRoute)
 
-app.listen(8082, 'localhost', () => console.log('Server started'))
+db.connect(() => {
+  app.listen(
+    env.API_PORT,
+    env.API_HOST,
+    () => console.log(`Server started at ${env.API_HOST}:${env.API_PORT}`)
+  )
+  console.log('Database connection established')
+})
 
 export default app

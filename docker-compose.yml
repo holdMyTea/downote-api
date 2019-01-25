@@ -1,0 +1,35 @@
+version: "3"
+
+volumes:
+  node_modules:
+
+services:
+
+  api:
+    container_name: downote_api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "127.0.0.1:8082:8082"
+    env_file:
+      - ./mysqlVars.env
+    environment:
+      API_HOST: api
+      API_PORT: 8082
+      DB_HOST: db
+    volumes:
+      - ./:/home/dowmote/app
+      - node_modules:/home/downote/app/node_modules/
+
+  db:
+    container_name: downote_db
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    env_file:
+      - ./mysqlVars.env
+    environment:
+      MYSQL_ROOT_PASSWORD: roop

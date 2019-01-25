@@ -1,4 +1,4 @@
-import { encrypt } from '../helpers/cypher'
+import { encrypt } from '../services/cypher'
 
 const login = ({ email, pass }) => {
   if (email && pass) {
