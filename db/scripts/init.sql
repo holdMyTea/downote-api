@@ -21,8 +21,8 @@ BEGIN
 END$$
 
 DELIMITER ;
-CALL downote.insert_user ('kappa@mail.com', '123');
-CALL downote.insert_user ('keepo@mail.com', '456');
-CALL downote.insert_user ('kippa@mail.com', '789');
+CALL downote.insert_user ('kappa@mail.com', '123123');
+CALL downote.insert_user ('keepo@mail.com', '456456');
+CALL downote.insert_user ('kippa@mail.com', '789789');
 
 SELECT * FROM downote.users;

@@ -1,7 +1,7 @@
 {
   "name": "dwn-api",
   "version": "1.0.0",
-  "repository": "https://github.com/rise42/downote-api",
+  "repository": "https://github.com/holdMyTea/downote-api.git",
   "description": "API for DowNote",
   "main": "index.js",
   "scripts": {

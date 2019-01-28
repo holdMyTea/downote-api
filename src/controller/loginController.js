@@ -1,30 +1,26 @@
-import { encrypt } from '../services/cypher'
+import { createToken } from '../services/cypher'
+import { findUser } from '../services/db'
+import { success, fail } from '../helpers/controllerFormatter'
 
-const login = ({ email, pass }) => {
+const login = async ({ email, pass }) => {
   if (email && pass) {
-    if (email.charAt(0) === 'a') {
-      return {
-        code: 401,
-        message: {
-          error: 'Wrong login credentials'
-        }
-      }
-    } else {
-      return {
-        code: 200,
-        message: {
-          token: encrypt(`${email};${new Date().toISOString()}`)
-        }
-      }
+    let record
+    try {
+      record = await findUser(email)
+      console.log(record)
+    } catch (error) {
+      console.error(error)
+      return fail(500, 'Something went wrong')
     }
-  } else {
-    return {
-      code: 400,
-      message: {
-        error: 'Required parameters are missing'
-      }
-    }
-  }
+
+    if (record === undefined) // empty set -- no user with such email
+      return fail(401, 'Wrong login credentials')
+    else if (record.password !== pass) // user exists, but the pass is wrong
+      return fail(401, 'Wrong login credentials')
+    else return success({
+      token: createToken()
+    })
+  } else return fail(400, 'Required parameters are missing')
 }
 
 export default {

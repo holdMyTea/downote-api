@@ -7,11 +7,10 @@ const connection = mysql.createConnection({
   port: 3306,
   user: env.MYSQL_USER,
   password: env.MYSQL_PASSWORD,
-  database: env.MYSQL_DATABASE,
-  insecureAuth: true
+  database: env.MYSQL_DATABASE
 })
 
-const connect = (callback) => {
+const connectToDatabase = (callback) => {
   setTimeout(() => { connection.connect(callback) }, 1000)
 }
 
@@ -25,9 +24,13 @@ const query = (query) =>
   )
 
 const findUser = (email) => query(`CALL search_user('${email}')`)
-  .then(rows => rows[0][0])
+  .then(row =>
+    row[0][0]
+      ? JSON.parse(JSON.stringify(row[0][0]))
+      : undefined
+  )
 
-export default {
-  connect,
+export {
+  connectToDatabase,
   findUser
 }

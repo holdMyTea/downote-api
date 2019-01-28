@@ -5,7 +5,7 @@ import bodyParser from 'body-parser'
 
 import env from './config/environment'
 import loginRoute from './routes/loginRoute'
-import db from './services/db'
+import { connectToDatabase } from './services/db'
 
 const app = express()
 
@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 app.get('/', (request, response) => response.send('Server here'))
 app.use('/login', loginRoute)
 
-db.connect(() => {
+connectToDatabase(() => {
   app.listen(
     env.API_PORT,
     env.API_HOST,
