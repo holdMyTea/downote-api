@@ -10,6 +10,7 @@ import { connectToDatabase } from './services/db'
 const app = express()
 
 app.use(morgan('dev'))
+// app.use(cookieParser())
 app.use(bodyParser.json())
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080')
