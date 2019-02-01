@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "babel-node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --require @babel/polyfill --require @babel/register"
   },
   "author": "rise42",
   "license": "ISC",
@@ -22,6 +22,10 @@
     "@babel/core": "^7.1.6",
     "@babel/node": "^7.2.2",
     "@babel/plugin-syntax-object-rest-spread": "^7.0.0",
-    "@babel/preset-env": "^7.1.6"
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.1.6",
+    "@babel/register": "^7.0.0",
+    "mocha": "^5.2.0",
+    "supertest": "^3.4.2"
   }
 }

@@ -6,5 +6,8 @@
     },
     "rules": {
         "curly": "off"
+    },
+    "env": {
+        "mocha": true
     }
 }

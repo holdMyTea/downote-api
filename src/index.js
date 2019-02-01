@@ -4,7 +4,7 @@ import bodyParser from 'body-parser'
 // import cookieParser from 'cookie-parser'
 
 import env from './config/environment'
-import loginRoute from './routes/loginRoute'
+import loginRoute from './routes/login.route'
 import { connectToDatabase } from './services/db'
 
 const app = express()

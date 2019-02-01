@@ -1,6 +1,6 @@
 import express from 'express'
 
-import controller from '../controller/loginController'
+import controller from '../controller/login.controller'
 
 const router = express()
 
