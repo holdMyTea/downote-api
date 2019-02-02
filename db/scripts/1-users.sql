@@ -16,7 +16,7 @@ END$$
 CREATE PROCEDURE downote.search_user (
   IN in_email VARCHAR(50)
 ) BEGIN
-  SELECT email, password, creation_date FROM downote.users WHERE email=in_email;
+  SELECT * FROM downote.users WHERE email=in_email;
 END$$
 
 DELIMITER ;

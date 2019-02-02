@@ -1,5 +1,5 @@
 import { createToken } from '../services/cypher'
-import { findUser } from '../services/db'
+import { findUser, saveToken } from '../services/db'
 import { success, fail } from '../helpers/controllerFormatter'
 
 const isEmailValid = (email) => /(\w)+@(\w)+\.{1}\w{1,5}/.test(email)
@@ -18,9 +18,12 @@ const login = async ({ email, pass }) => {
       return fail(401, 'Wrong login credentials')
     else if (record.password !== pass) // user exists, but the pass is wrong
       return fail(401, 'Wrong login credentials')
-    else return success({
-      token: createToken()
-    })
+    else {
+      const token = createToken()
+      console.log(record)
+      saveToken(token, record.id)
+      return success({ token })
+    }
   } else return fail(400, 'Required parameters are missing')
 }
 

@@ -1,4 +1,5 @@
 import mysql from 'mysql'
+import moment from 'moment'
 
 import env from '../config/environment'
 
@@ -30,7 +31,13 @@ const findUser = (email) => query(`CALL search_user('${email}')`)
       : undefined
   )
 
+const getExpirationDate = () => moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss')
+
+const saveToken = (token, userId) =>
+  query(`CALL insert_token('${token}','${getExpirationDate()}',${userId});`)
+
 export {
   connectToDatabase,
-  findUser
+  findUser,
+  saveToken
 }
