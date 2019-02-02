@@ -13,7 +13,7 @@ export const decrypt = (string) =>
     getEncrypter().decrypt(
       aes.utils.hex.toBytes(string)))
 
-const charDictionary = // An array of charcodes [a-zA-Z0-9] and some spice [;:<>=]
+const charDictionary = // An array of charcodes [a-zA-Z0-9]
   Array(10).fill(0).map((value, index) => 48 + index) // [0-9]
     .concat(
       Array(26).fill(0).map((value, index) => 65 + index), // [A-Z]
