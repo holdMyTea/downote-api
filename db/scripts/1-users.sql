@@ -13,10 +13,10 @@ CREATE PROCEDURE downote.insert_user (
   INSERT INTO downote.users (email, password) VALUES (in_email, in_password);
 END$$
 
-CREATE PROCEDURE downote.search_user (
+CREATE PROCEDURE downote.find_user (
   IN in_email VARCHAR(50)
 ) BEGIN
-  SELECT * FROM downote.users WHERE email=in_email;
+  SELECT * FROM downote.users WHERE email = in_email;
 END$$
 
 DELIMITER ;

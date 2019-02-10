@@ -24,7 +24,7 @@ const query = (query) =>
     })
   )
 
-const findUser = (email) => query(`CALL search_user('${email}')`)
+const findUser = (email) => query(`CALL find_user('${email}')`)
   .then(row =>
     row[0][0]
       ? JSON.parse(JSON.stringify(row[0][0]))

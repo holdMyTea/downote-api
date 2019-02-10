@@ -11,5 +11,29 @@ CREATE PROCEDURE downote.insert_token (
   IN untill TIMESTAMP,
   IN user INT(8)
 ) BEGIN
+  -- preserving a single token for a user
+  DELETE FROM downote.tokens WHERE user_id = user;
   INSERT INTO downote.tokens (id, expires_on, user_id) VALUES (token, untill, user);
+END$$
+
+CREATE PROCEDURE downote.check_token (
+  IN token CHAR(40)
+) BEGIN
+  -- removing token if expired
+  DELETE FROM downote.tokens WHERE id = token AND expires_on < CURRENT_TIMESTAMP;
+  SELECT * FROM downote.tokens WHERE tokens.id = token;
+END$$
+
+CREATE PROCEDURE downote.delete_token (
+  IN token CHAR(40)
+) BEGIN
+  DELETE FROM downote.tokens WHERE id = token;
+END$$
+
+CREATE PROCEDURE downote.delete_token_by_email (
+  IN in_email VARCHAR(50)
+) BEGIN
+  DELETE FROM downote.tokens WHERE user_id = (
+    SELECT id FROM downote.users WHERE email = in_email
+  );
 END$$
