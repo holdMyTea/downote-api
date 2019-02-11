@@ -21,7 +21,7 @@ CREATE PROCEDURE downote.check_token (
 ) BEGIN
   -- removing token if expired
   DELETE FROM downote.tokens WHERE id = token AND expires_on < CURRENT_TIMESTAMP;
-  SELECT * FROM downote.tokens WHERE tokens.id = token;
+  SELECT * FROM downote.tokens WHERE tokens.id = BINARY token;
 END$$
 
 CREATE PROCEDURE downote.delete_token (

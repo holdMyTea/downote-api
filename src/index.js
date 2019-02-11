@@ -4,7 +4,7 @@ import bodyParser from 'body-parser'
 // import cookieParser from 'cookie-parser'
 
 import env from './config/environment'
-import loginRoute from './routes/login.route'
+import tokenRoute from './routes/token.route'
 import { connectToDatabase } from './services/db'
 
 const app = express()
@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 })
 
 app.get('/', (request, response) => response.send('Server here'))
-app.use('/login', loginRoute)
+app.use('/token', tokenRoute)
 
 connectToDatabase(() => {
   app.listen(

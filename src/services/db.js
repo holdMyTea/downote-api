@@ -24,20 +24,27 @@ const query = (query) =>
     })
   )
 
-const findUser = (email) => query(`CALL find_user('${email}')`)
-  .then(row =>
-    row[0][0]
-      ? JSON.parse(JSON.stringify(row[0][0]))
-      : undefined
-  )
+const parseSelect = (rows) =>
+  rows[0][0]
+    ? JSON.parse(JSON.stringify(rows[0][0]))
+    : undefined
 
-const getExpirationDate = () => moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss')
+const findUser = (email) => query(`CALL find_user('${email}')`)
+  .then(rows => parseSelect(rows))
+
+const getExpirationDate = () =>
+  moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss')
 
 const saveToken = (token, userId) =>
   query(`CALL insert_token('${token}','${getExpirationDate()}',${userId});`)
 
+const checkToken = (token) =>
+  query(`CALL check_token('${token}');`)
+    .then(rows => parseSelect(rows))
+
 export {
   connectToDatabase,
   findUser,
-  saveToken
+  saveToken,
+  checkToken
 }
