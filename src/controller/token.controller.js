@@ -28,7 +28,9 @@ const create = async ({ email, pass }) => {
 }
 
 const verify = async ({ token }) => {
-  if (isTokenValid(token)) {
+  if (!token) {
+    return fail(400, 'Token is missing')
+  } else if (isTokenValid(token)) {
     let record
     try {
       record = await checkToken(token)
@@ -36,7 +38,7 @@ const verify = async ({ token }) => {
       return internalFail(error)
     }
 
-    if (!record) // empty set, no such token
+    if (!record) // empty set -- no such token
       return fail(401, 'Invalid token')
     else return success('Valid token')
   }
