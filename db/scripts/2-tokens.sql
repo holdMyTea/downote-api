@@ -24,16 +24,8 @@ CREATE PROCEDURE downote.check_token (
   SELECT * FROM downote.tokens WHERE tokens.id = BINARY token;
 END$$
 
-CREATE PROCEDURE downote.delete_token (
+CREATE PROCEDURE downote.remove_token (
   IN token CHAR(40)
 ) BEGIN
   DELETE FROM downote.tokens WHERE id = token;
-END$$
-
-CREATE PROCEDURE downote.delete_token_by_email (
-  IN in_email VARCHAR(50)
-) BEGIN
-  DELETE FROM downote.tokens WHERE user_id = (
-    SELECT id FROM downote.users WHERE email = in_email
-  );
 END$$

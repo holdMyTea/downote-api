@@ -18,8 +18,9 @@ router.post('/verify', async (req, res) => {
   res.status(query.code).send(query.message)
 })
 
-router.post('/delete', async (req, res) => {
-
+router.post('/remove', async (req, res) => {
+  const query = await controller.remove(req.body, req.cookies)
+  res.status(query.code).send(query.message)
 })
 
 export default router

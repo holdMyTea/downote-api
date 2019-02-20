@@ -42,9 +42,13 @@ const checkToken = (token) =>
   query(`CALL check_token('${token}');`)
     .then(rows => parseSelect(rows))
 
+const removeToken = (token) =>
+  query(`CALL remove_token('${token}');`)
+
 export {
   connectToDatabase,
   findUser,
   saveToken,
-  checkToken
+  checkToken,
+  removeToken
 }

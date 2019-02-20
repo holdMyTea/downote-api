@@ -107,3 +107,21 @@ describe('POST /token/verify check', () => {
       .expect({ error: 'Cookie and body tokens mismatch' }, done)
   })
 })
+
+describe('POST /token/remove check', () => {
+  it('Should remove the correct token', (done) => {
+    request(app)
+      .post('/token/remove')
+      .send({ token })
+      .expect(200)
+      .expect('Token removed', done)
+  })
+
+  it('Should respond with 401, wrong token on the deleted token', (done) => {
+    request(app)
+      .post('/token/verify')
+      .send({ token })
+      .expect(401)
+      .expect({ error: 'Invalid token' }, done)
+  })
+})

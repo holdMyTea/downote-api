@@ -1,5 +1,5 @@
 import { createToken } from '../services/cypher'
-import { findUser, saveToken, checkToken } from '../services/db'
+import { findUser, saveToken, checkToken, removeToken } from '../services/db'
 import { success, fail, internalFail, resolveToken } from '../helpers/controllerFormatter'
 
 const isEmailValid = (email) => /(\w)+@(\w)+\.{1}\w{1,5}/.test(email)
@@ -50,7 +50,28 @@ const verify = async (body, cookies) => {
   return fail(400, 'Invalid token format')
 }
 
+const remove = async (body, cookies) => {
+  const token = resolveToken(body, cookies)
+  if (!token) // no token provided
+    return fail(400, 'Token is missing')
+
+  if (token.bodyToken && token.cookieToken) // token from cookie !== token from body
+    return fail(400, 'Cookie and body tokens mismatch')
+
+  if (isTokenValid(token)) {
+    try {
+      await removeToken(token)
+    } catch (error) {
+      return internalFail(error)
+    }
+
+    return success('Token removed')
+  }
+  return fail(400, 'Invalid token format')
+}
+
 export default {
   create,
-  verify
+  verify,
+  remove
 }
