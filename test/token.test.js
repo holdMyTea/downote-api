@@ -3,7 +3,9 @@ import app from '../src/index'
 
 const isTokenValid = (token) => /[0-9a-zA-Z]{40}/.test(token)
 
-describe('Token check', () => {
+let token
+
+describe('POST /token check', () => {
   it('Should respond with 401, wrong logins', (done) => {
     request(app)
       .post('/token')
@@ -25,8 +27,6 @@ describe('Token check', () => {
       .expect({ error: 'Required parameters are missing' }, done)
   })
 
-  let token
-
   it('Should respond with an access token and save it to cookie', (done) => {
     request(app)
       .post('/token')
@@ -47,7 +47,9 @@ describe('Token check', () => {
         } else throw new Error('Token mismatch')
       })
   })
+})
 
+describe('POST /token/verify check', () => {
   it('Should verify the correct token', (done) => {
     request(app)
       .post('/token/verify')
@@ -69,5 +71,39 @@ describe('Token check', () => {
       .send({ token: token.toLowerCase() })
       .expect(401)
       .expect({ error: 'Invalid token' }, done)
+  })
+
+  it('Should respond with 400, invalid token format', (done) => {
+    request(app)
+      .post('/token/verify')
+      .send({ token: token.slice(1) })
+      .expect(400)
+      .expect({ error: 'Invalid token format' }, done)
+  })
+
+  it('Should verify the correct token from cookie', (done) => {
+    request(app)
+      .post('/token/verify')
+      .set('Cookie', `token=${token}`)
+      .expect(200)
+      .expect('Valid token', done)
+  })
+
+  it('Should verify the correct, matching token from cookie & body', (done) => {
+    request(app)
+      .post('/token/verify')
+      .set('Cookie', `token=${token}`)
+      .send({ token: token })
+      .expect(200)
+      .expect('Valid token', done)
+  })
+
+  it('Should respond with 400, token mismatch', (done) => {
+    request(app)
+      .post('/token/verify')
+      .set('Cookie', `token=${token}`)
+      .send({ token: token.toLowerCase() })
+      .expect(400)
+      .expect({ error: 'Cookie and body tokens mismatch' }, done)
   })
 })

@@ -28,7 +28,6 @@ const create = async ({ email, pass }) => {
 
 const verify = async (body, cookies) => {
   const token = resolveToken(body, cookies)
-
   if (!token) // no token provided
     return fail(400, 'Token is missing')
 
