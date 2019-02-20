@@ -1,4 +1,5 @@
-import { fail } from './controllerFormatter'
+import { fail, internalFail } from './controllerFormatter'
+import { checkToken } from '../services/db'
 
 const isTokenValid = (token) => /\w{40}/.test(token)
 
@@ -15,6 +16,12 @@ const resolveToken = (body, cookies) => {
   return { error: fail(400, 'Token is missing') }
 }
 
+/**
+ * Checks tokens from body and cookies of the request.
+ * @param body body of the request
+ * @param cookies cookies from the request
+ * @returns a token if it's valid or and error object
+ */
 const validateToken = (body, cookies) => {
   const check = resolveToken(body, cookies)
 
@@ -27,6 +34,33 @@ const validateToken = (body, cookies) => {
   return { error: fail(400, 'Invalid token format') }
 }
 
+/**
+ * Checks tokens from body and cookies of the request
+ * and searches it in the database.
+ * @param body body of the request
+ * @param cookies cookies from the request
+ * @returns a record of the user if the token is valid or an error object
+ */
+const verifyToken = async (body, cookies) => {
+  const check = validateToken(body, cookies)
+
+  if (check.error)
+    return { error: check.error }
+
+  let record
+  try {
+    record = await checkToken(check.token)
+  } catch (error) {
+    return { error: internalFail(error) }
+  }
+
+  if (!record) // empty set -- no such token
+    return { error: fail(401, 'Token doesn\'t exist') }
+
+  return record
+}
+
 export {
-  validateToken
+  validateToken,
+  verifyToken
 }

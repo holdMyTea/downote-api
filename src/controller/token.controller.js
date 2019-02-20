@@ -1,7 +1,7 @@
 import { createToken } from '../services/cypher'
-import { findUser, saveToken, checkToken, removeToken } from '../services/db'
+import { findUser, saveToken, removeToken } from '../services/db'
 import { success, fail, internalFail } from '../helpers/controllerFormatter'
-import { validateToken } from '../helpers/tokenValidator'
+import { validateToken, verifyToken } from '../helpers/tokenValidator'
 
 const isEmailValid = (email) => /(\w)+@(\w)+\.{1}\w{1,5}/.test(email)
 
@@ -27,19 +27,10 @@ const create = async ({ email, pass }) => {
 }
 
 const verify = async (body, cookies) => {
-  const check = validateToken(body, cookies)
+  const check = await verifyToken(body, cookies)
 
-  if (check.error) return check.error
-
-  let record
-  try {
-    record = await checkToken(check.token)
-  } catch (error) {
-    return internalFail(error)
-  }
-
-  if (!record) // empty set -- no such token
-    return fail(401, 'Token doesn\'t exist')
+  if (check.error)
+    return check.error
 
   return success('Valid token')
 }
@@ -47,7 +38,8 @@ const verify = async (body, cookies) => {
 const remove = async (body, cookies) => {
   const check = validateToken(body, cookies)
 
-  if (check.error) return check.error
+  if (check.error)
+    return check.error
 
   try {
     await removeToken(check.token)
