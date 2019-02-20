@@ -70,7 +70,7 @@ describe('POST /token/verify check', () => {
       .post('/token/verify')
       .send({ token: token.toLowerCase() })
       .expect(401)
-      .expect({ error: 'Invalid token' }, done)
+      .expect({ error: 'Token doesn\'t exist' }, done)
   })
 
   it('Should respond with 400, invalid token format', (done) => {
@@ -122,6 +122,6 @@ describe('POST /token/remove check', () => {
       .post('/token/verify')
       .send({ token })
       .expect(401)
-      .expect({ error: 'Invalid token' }, done)
+      .expect({ error: 'Token doesn\'t exist' }, done)
   })
 })

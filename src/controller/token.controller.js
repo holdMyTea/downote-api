@@ -1,9 +1,9 @@
 import { createToken } from '../services/cypher'
 import { findUser, saveToken, checkToken, removeToken } from '../services/db'
-import { success, fail, internalFail, resolveToken } from '../helpers/controllerFormatter'
+import { success, fail, internalFail } from '../helpers/controllerFormatter'
+import { validateToken } from '../helpers/tokenValidator'
 
 const isEmailValid = (email) => /(\w)+@(\w)+\.{1}\w{1,5}/.test(email)
-const isTokenValid = (token) => /\w{40}/.test(token)
 
 const create = async ({ email, pass }) => {
   if (isEmailValid(email) && pass) {
@@ -27,47 +27,35 @@ const create = async ({ email, pass }) => {
 }
 
 const verify = async (body, cookies) => {
-  const token = resolveToken(body, cookies)
-  if (!token) // no token provided
-    return fail(400, 'Token is missing')
+  const check = validateToken(body, cookies)
 
-  if (token.bodyToken && token.cookieToken) // token from cookie !== token from body
-    return fail(400, 'Cookie and body tokens mismatch')
+  if (check.error) return check.error
 
-  if (isTokenValid(token)) {
-    let record
-    try {
-      record = await checkToken(token)
-    } catch (error) {
-      return internalFail(error)
-    }
-
-    if (!record) // empty set -- no such token
-      return fail(401, 'Invalid token')
-
-    return success('Valid token')
+  let record
+  try {
+    record = await checkToken(check.token)
+  } catch (error) {
+    return internalFail(error)
   }
-  return fail(400, 'Invalid token format')
+
+  if (!record) // empty set -- no such token
+    return fail(401, 'Token doesn\'t exist')
+
+  return success('Valid token')
 }
 
 const remove = async (body, cookies) => {
-  const token = resolveToken(body, cookies)
-  if (!token) // no token provided
-    return fail(400, 'Token is missing')
+  const check = validateToken(body, cookies)
 
-  if (token.bodyToken && token.cookieToken) // token from cookie !== token from body
-    return fail(400, 'Cookie and body tokens mismatch')
+  if (check.error) return check.error
 
-  if (isTokenValid(token)) {
-    try {
-      await removeToken(token)
-    } catch (error) {
-      return internalFail(error)
-    }
-
-    return success('Token removed')
+  try {
+    await removeToken(check.token)
+  } catch (error) {
+    return internalFail(error)
   }
-  return fail(400, 'Invalid token format')
+
+  return success('Token removed')
 }
 
 export default {
