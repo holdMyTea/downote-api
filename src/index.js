@@ -1,7 +1,7 @@
 import express from 'express'
 import morgan from 'morgan'
 import bodyParser from 'body-parser'
-// import cookieParser from 'cookie-parser'
+import cookieParser from 'cookie-parser'
 
 import env from './config/environment'
 import tokenRoute from './routes/token.route'
@@ -10,7 +10,7 @@ import { connectToDatabase } from './services/db'
 const app = express()
 
 app.use(morgan('dev'))
-// app.use(cookieParser())
+app.use(cookieParser())
 app.use(bodyParser.json())
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080')

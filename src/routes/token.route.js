@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
 })
 
 router.post('/verify', async (req, res) => {
-  const query = await controller.verify(req.body)
+  const query = await controller.verify(req.body, req.cookies)
   res.status(query.code).send(query.message)
 })
 
