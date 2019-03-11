@@ -39,8 +39,16 @@ describe('POST /token check', () => {
         if (err)
           throw err
 
+        const cookies = res.headers['set-cookie'][0]
+        const tokenStart = cookies.indexOf('token=') + 6
+        const tokenEnd = cookies.indexOf(';', tokenStart)
+
+        const cookieToken = cookies.slice(
+          tokenStart,
+          tokenEnd
+        )
+
         const responseToken = res.body.token
-        const cookieToken = res.headers['set-cookie'][0].slice(6, 46)
         if (responseToken === cookieToken && isTokenValid(responseToken)) {
           token = responseToken
           done()
@@ -108,16 +116,33 @@ describe('POST /token/verify check', () => {
   })
 })
 
-describe('POST /token/remove check', () => {
+describe('DELETE /token check', () => {
   it('Should remove the correct token', (done) => {
     request(app)
-      .post('/token/remove')
-      .send({ token })
+      .delete('/token')
+      .set('Cookie', `token=${token}`)
       .expect(200)
-      .expect('Token removed', done)
+      .expect('Token removed')
+      .end((err, res) => {
+        if (err)
+          throw err
+
+        const cookies = res.headers['set-cookie'][0]
+        const tokenStart = cookies.indexOf('token=') + 6
+        const tokenEnd = cookies.indexOf(';', tokenStart)
+
+        const cookieToken = cookies.slice(
+          tokenStart,
+          tokenEnd
+        )
+
+        if (!cookieToken) {
+          done()
+        } else throw new Error('Token mismatch')
+      })
   })
 
-  it('Should respond with 401, wrong token on the deleted token', (done) => {
+  it('Should respond with 401, on the deleted token', (done) => {
     request(app)
       .post('/token/verify')
       .send({ token })

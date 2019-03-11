@@ -8,7 +8,10 @@ router.post('/', async (req, res) => {
   const query = await controller.create(req.body)
 
   if (query.message.token)
-    res.cookie('token', query.message.token, { maxAge: 48 * 60 * 60 * 1000 })
+    res.cookie('token', query.message.token, {
+      maxAge: 48 * 60 * 60 * 1000,
+      path: '/'
+    })
 
   res.status(query.code).send(query.message)
 })
@@ -18,8 +21,12 @@ router.post('/verify', async (req, res) => {
   res.status(query.code).send(query.message)
 })
 
-router.post('/remove', async (req, res) => {
+router.delete('/', async (req, res) => {
   const query = await controller.remove(req.body, req.cookies)
+
+  if (query.code === 200)
+    res.clearCookie('token', { path: '/' })
+
   res.status(query.code).send(query.message)
 })
 
