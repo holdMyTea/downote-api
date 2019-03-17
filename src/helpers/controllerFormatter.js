@@ -1,6 +1,11 @@
-const success = (message) => ({
+const successWithData = (message) => ({
   code: 200,
   message
+})
+
+const successWithMessage = (message) => ({
+  code: 200,
+  message: { message }
 })
 
 const fail = (code, errorMessage) => ({
@@ -14,7 +19,8 @@ const internalFail = (error) => {
 }
 
 export {
-  success,
+  successWithData,
+  successWithMessage,
   fail,
   internalFail
 }

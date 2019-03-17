@@ -63,7 +63,7 @@ describe('POST /token/verify check', () => {
       .post('/token/verify')
       .send({ token })
       .expect(200)
-      .expect('Valid token', done)
+      .expect({ message: 'Valid token' }, done)
   })
 
   it('Should respond with 400, missing token', (done) => {
@@ -94,7 +94,7 @@ describe('POST /token/verify check', () => {
       .post('/token/verify')
       .set('Cookie', `token=${token}`)
       .expect(200)
-      .expect('Valid token', done)
+      .expect({ message: 'Valid token' }, done)
   })
 
   it('Should verify the correct, matching token from cookie & body', (done) => {
@@ -103,7 +103,7 @@ describe('POST /token/verify check', () => {
       .set('Cookie', `token=${token}`)
       .send({ token: token })
       .expect(200)
-      .expect('Valid token', done)
+      .expect({ message: 'Valid token' }, done)
   })
 
   it('Should respond with 400, token mismatch', (done) => {
@@ -122,7 +122,7 @@ describe('DELETE /token check', () => {
       .delete('/token')
       .set('Cookie', `token=${token}`)
       .expect(200)
-      .expect('Token removed')
+      .expect({ message: 'Token removed' })
       .end((err, res) => {
         if (err)
           throw err

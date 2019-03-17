@@ -1,6 +1,6 @@
 import { createToken } from '../services/cypher'
 import { findUser, saveToken, removeToken } from '../services/db'
-import { success, fail, internalFail } from '../helpers/controllerFormatter'
+import { successWithData, successWithMessage, fail, internalFail } from '../helpers/controllerFormatter'
 import { validateToken, verifyToken } from '../helpers/tokenValidator'
 
 const isEmailValid = (email) => /(\w)+@(\w)+\.{1}\w{1,5}/.test(email)
@@ -21,7 +21,7 @@ const create = async ({ email, pass }) => {
 
     const token = createToken()
     saveToken(token, record.id)
-    return success({ token })
+    return successWithData({ token })
   }
   return fail(400, 'Required parameters are missing')
 }
@@ -32,7 +32,7 @@ const verify = async (body, cookies) => {
   if (check.error)
     return check.error
 
-  return success('Valid token')
+  return successWithMessage('Valid token')
 }
 
 const remove = async (body, cookies) => {
@@ -47,7 +47,7 @@ const remove = async (body, cookies) => {
     return internalFail(error)
   }
 
-  return success('Token removed')
+  return successWithMessage('Token removed')
 }
 
 export default {
