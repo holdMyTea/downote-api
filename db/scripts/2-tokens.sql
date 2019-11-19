@@ -9,7 +9,7 @@ DELIMITER $$
 CREATE PROCEDURE downote.insert_token (
   IN token CHAR(40),
   IN untill TIMESTAMP,
-  IN user INT(8)
+  IN user INT(8) UNSIGNED
 ) BEGIN
   -- preserving a single token for a user
   DELETE FROM downote.tokens WHERE user_id = user;
