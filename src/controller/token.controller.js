@@ -1,5 +1,5 @@
 import { createToken } from '../services/cypher'
-import { findUser, saveToken, removeToken } from '../services/db'
+import { user, token } from '../services/db'
 import { successWithData, successWithMessage, fail, internalFail } from '../helpers/controllerFormatter'
 import { validateToken, verifyToken } from '../helpers/tokenValidator'
 
@@ -9,7 +9,7 @@ const create = async ({ email, pass }) => {
   if (isEmailValid(email) && pass) {
     let record
     try {
-      record = await findUser(email)
+      record = await user.find(email)
     } catch (error) {
       return internalFail(error)
     }
@@ -19,9 +19,9 @@ const create = async ({ email, pass }) => {
     if (record.password !== pass) // user exists, but the pass is wrong
       return fail(401, 'Wrong login credentials')
 
-    const token = createToken()
-    saveToken(token, record.id)
-    return successWithData({ token })
+    const t = createToken()
+    token.save(t, record.id)
+    return successWithData({ token: t })
   }
   return fail(400, 'Required parameters are missing')
 }
@@ -42,7 +42,7 @@ const remove = async (body, cookies) => {
     return check.error
 
   try {
-    await removeToken(check.token)
+    await token.remove(check.token)
   } catch (error) {
     return internalFail(error)
   }

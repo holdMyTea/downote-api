@@ -1,7 +1,7 @@
 import { fail, internalFail } from './controllerFormatter'
-import { checkToken } from '../services/db'
+import { token } from '../services/db'
 
-const isTokenValid = (token) => /\w{40}/.test(token)
+const isTokenValid = (t) => /\w{40}/.test(t)
 
 const resolveToken = (body, cookies) => {
   if (body.token && cookies.token) {
@@ -49,7 +49,7 @@ const verifyToken = async (body, cookies) => {
 
   let record
   try {
-    record = await checkToken(check.token)
+    record = await token.check(check.token)
   } catch (error) {
     return { error: internalFail(error) }
   }
