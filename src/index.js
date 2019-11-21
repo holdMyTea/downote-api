@@ -2,10 +2,9 @@ import express from 'express'
 import morgan from 'morgan'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+import createError from 'http-errors'
 
-import env from './config/environment'
-import tokenRoute from './routes/token.route'
-import { connectToDatabase } from './services/db'
+import tokenRoute from './route/token.route'
 
 const app = express()
 
@@ -21,15 +20,23 @@ app.use((req, res, next) => {
 })
 
 app.get('/', (request, response) => response.send('Server here'))
+app.post('/', (request, response) => { throw createError(401, 'Not Auth') })
+
 app.use('/token', tokenRoute)
 
-connectToDatabase(() => {
-  app.listen(
-    env.API_PORT,
-    env.API_HOST,
-    () => console.log(`Server started at ${env.API_HOST}:${env.API_PORT}`)
-  )
-  console.log('Database connection established')
+app.use((err, req, res, next) => {
+  console.log('qqq')
+  console.error(err)
+  res
+    .status(err.status || 500)
+    .send(err.message || 'Internal server error')
 })
+
+app.listen(
+  8080,
+  () => {
+    console.log(`Server started at 8080`)
+  }
+)
 
 export default app
