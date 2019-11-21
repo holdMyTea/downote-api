@@ -25,8 +25,6 @@ app.post('/', (request, response) => { throw createError(401, 'Not Auth') })
 app.use('/token', tokenRoute)
 
 app.use((err, req, res, next) => {
-  console.log('qqq')
-  console.error(err)
   res
     .status(err.status || 500)
     .send(err.message || 'Internal server error')
