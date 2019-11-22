@@ -1,6 +1,6 @@
 import createError from 'http-errors'
 
-import { createToken } from '../helpers/tokenGenerator'
+import { createToken, validateToken } from '../helpers/token.helper'
 import db from '../services/db'
 
 const isEmailValid = email => /(\w)+@(\w)+\.{1}\w{1,5}/.test(email)
@@ -26,6 +26,32 @@ const create = async ({ email, pass }) => {
   throw createError(400, 'Required parameters are missing')
 }
 
+const verify = async (body, cookies) => {
+  const token = validateToken(body, cookies)
+
+  let record
+  try {
+    record = await db.token.check(token)
+  } catch (error) {
+    throw createError(500, 'Internal server error')
+  }
+
+  if (!record) // empty set -- no such token
+    throw createError(401, 'Token doesn\'t exist')
+}
+
+const remove = async (body, cookies) => {
+  const token = validateToken(body, cookies)
+
+  try {
+    await db.token.remove(token)
+  } catch (error) {
+    throw createError(500, 'Internal server error')
+  }
+}
+
 export default {
-  create
+  create,
+  verify,
+  remove
 }
