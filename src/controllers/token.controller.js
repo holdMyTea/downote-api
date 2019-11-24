@@ -38,6 +38,8 @@ const verify = async (body, cookies) => {
 
   if (!record) // empty set -- no such token
     throw createError(401, 'Token doesn\'t exist')
+
+  return record
 }
 
 const remove = async (body, cookies) => {

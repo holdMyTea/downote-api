@@ -35,21 +35,33 @@ const user = {
 }
 
 const token = {
-  save: (token, userId) =>
-    query(`CALL insert_token(
+  save: (token, userId) => query(
+    `CALL insert_token(
       '${token}',
       '${moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss')}',
       ${userId}
-    );`),
-
+    );`
+  ),
   check: (token) => query(`CALL check_token('${token}');`)
     .then(rows => parseSelect(rows)),
 
   remove: (token) => query(`CALL remove_token('${token}');`)
 }
 
+const notes = {
+  create: (header, text, order, userId) => query(
+    `CALL insert_note(
+      '${header}',
+      '${text}',
+      ${order},
+      ${userId}
+    );`
+  )
+}
+
 export default {
   connectToDatabase,
   user,
-  token
+  token,
+  notes
 }

@@ -3,8 +3,10 @@ import morgan from 'morgan'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 
-import env from './config/environment'
 import tokenRoute from './routes/token.route'
+import notesRoute from './routes/notes.route'
+
+import env from './config/environment'
 import db from './services/db'
 
 const app = express()
@@ -22,6 +24,7 @@ app.use((req, res, next) => {
 
 app.get('/', (request, response) => response.send('Server here'))
 app.use('/token', tokenRoute)
+app.use('/notes', notesRoute)
 
 app.use((err, req, res, next) => {
   console.error(err.message)
