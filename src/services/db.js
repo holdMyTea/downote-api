@@ -51,12 +51,12 @@ const token = {
 const notes = {
   create: (header, text, order, userId) => query(
     `CALL insert_note(
-      '${header}',
-      '${text}',
+      '${header || null}',
+      '${text || null}',
       ${order},
       ${userId}
     );`
-  )
+  ).then(rows => parseSelect(rows)['LAST_INSERT_ID()'])
 }
 
 export default {

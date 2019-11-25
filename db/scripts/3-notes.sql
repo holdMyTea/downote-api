@@ -18,6 +18,7 @@ CREATE PROCEDURE downote.insert_note (
 ) BEGIN
   INSERT INTO downote.notes(note_header, note_text, note_order, user_id)
     VALUES (header_value, text_value, order_value, user_value);
+  SELECT LAST_INSERT_ID();
 END$$
 
 CREATE PROCEDURE downote.update_note_content (
