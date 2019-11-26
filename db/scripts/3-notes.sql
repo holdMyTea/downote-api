@@ -51,5 +51,6 @@ END$$
 CREATE PROCEDURE downote.get_user_notes (
   IN user_value INT(8) UNSIGNED
 ) BEGIN
-  SELECT * FROM downote.notes WHERE user_id = user_value;
+  SELECT id, note_header, note_text, note_order, created_time, updated_time
+    FROM downote.notes WHERE user_id = user_value;
 END$$

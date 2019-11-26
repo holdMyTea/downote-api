@@ -40,8 +40,8 @@ const token = {
       '${token}',
       '${moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss')}',
       ${userId}
-    );`
-  ),
+    );`),
+
   check: (token) => query(`CALL check_token('${token}');`)
     .then(rows => parseSelect(rows)),
 
@@ -56,7 +56,11 @@ const notes = {
       ${order},
       ${userId}
     );`
-  ).then(rows => parseSelect(rows)['LAST_INSERT_ID()'])
+  ).then(rows => parseSelect(rows)['LAST_INSERT_ID()']),
+
+  getAll: userId => query(
+    `CALL get_user_notes(${userId});`
+  )
 }
 
 export default {

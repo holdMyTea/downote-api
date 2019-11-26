@@ -6,9 +6,15 @@ import controller from '../controllers/notes.controller'
 const router = express()
 
 router.post('/', asyncHandler(async (req, res) => {
-  console.log(await controller.create(req.body, req.cookies))
+  const noteId = await controller.create(req.body, req.cookies)
 
-  res.status(200).send('Namal')
+  res.status(200).json({ noteId })
+}))
+
+router.get('/all', asyncHandler(async (req, res) => {
+  const notes = await controller.getAll(req.body, req.cookies)
+
+  res.status(200).json(notes)
 }))
 
 export default router

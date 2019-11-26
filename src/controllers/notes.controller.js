@@ -22,6 +22,13 @@ const create = async (body, cookies) => {
   }
 }
 
+const getAll = async (body, cookies) => {
+  const userId = (await token.verify(body, cookies)).user_id
+
+  return (await db.notes.getAll(userId))[0]
+}
+
 export default {
-  create
+  create,
+  getAll
 }
