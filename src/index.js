@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 
 import tokenRoute from './routes/token.route'
+import noteRoute from './routes/note.route'
 import notesRoute from './routes/notes.route'
 
 import env from './config/environment'
@@ -24,13 +25,21 @@ app.use((req, res, next) => {
 
 app.get('/', (request, response) => response.send('Server here'))
 app.use('/token', tokenRoute)
+app.use('/note', noteRoute)
 app.use('/notes', notesRoute)
 
 app.use((err, req, res, next) => {
-  console.error(err.message)
+  if (err.status === 500) {
+    console.error(err.message)
+    console.error(err.stack)
+  }
+
   res
     .status(err.status || 500)
-    .json({ error: err.message || 'Internal server error' })
+    .json({
+      error: err.message || 'Internal server error',
+      stack: err.status === 500 ? err.stack : undefined
+    })
 })
 
 db.connectToDatabase(() => {

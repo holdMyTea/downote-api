@@ -8,7 +8,7 @@ const create = async (body, cookies) => {
 
   if (body && body.order && (body.header || body.text)) {
     try {
-      return await db.notes.create(
+      return await db.note.create(
         body.header,
         body.text,
         body.order,
@@ -22,13 +22,32 @@ const create = async (body, cookies) => {
   }
 }
 
+const updateContent = async (body, cookies) => {
+  await token.verify(body, cookies)
+
+  if (body && body.id && (body.header || body.text)) {
+    try {
+      await db.note.update(
+        body.id,
+        body.header,
+        body.text
+      )
+
+      return body.id
+    } catch (error) {
+      throw createError(500, 'Internal server error')
+    }
+  }
+}
+
 const getAll = async (body, cookies) => {
   const userId = (await token.verify(body, cookies)).user_id
 
-  return (await db.notes.getAll(userId))[0]
+  return (await db.notes.get(userId))[0]
 }
 
 export default {
   create,
+  updateContent,
   getAll
 }

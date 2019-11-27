@@ -48,7 +48,7 @@ const token = {
   remove: (token) => query(`CALL remove_token('${token}');`)
 }
 
-const notes = {
+const note = {
   create: (header, text, order, userId) => query(
     `CALL insert_note(
       '${header || null}',
@@ -58,7 +58,21 @@ const notes = {
     );`
   ).then(rows => parseSelect(rows)['LAST_INSERT_ID()']),
 
-  getAll: userId => query(
+  update: (id, header, text) => query(
+    `CALL update_note_content(
+      ${id},
+      '${header || null}',
+      '${text || null}'
+    );`
+  ),
+
+  delete: id => query(
+    `CALL remove_note(${id});`
+  )
+}
+
+const notes = {
+  get: userId => query(
     `CALL get_user_notes(${userId});`
   )
 }
@@ -67,5 +81,6 @@ export default {
   connectToDatabase,
   user,
   token,
+  note,
   notes
 }
