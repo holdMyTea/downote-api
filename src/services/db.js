@@ -74,7 +74,27 @@ const note = {
 const notes = {
   get: userId => query(
     `CALL get_user_notes(${userId});`
-  )
+  ),
+
+  reorder: newOrder => {
+    const whenThen = newOrder.reduce((acc, cur) =>
+      `${acc}WHEN ${cur.id} THEN ${cur.order}
+      `, '')
+
+    const ids = newOrder.reduce((acc, cur) =>
+      `${acc},${cur.id}`, '').slice(1)
+
+    const a =
+      `UPDATE notes SET note_order =
+        CASE id
+          ${whenThen}
+        END
+      WHERE id IN (${ids})`
+
+    console.log(a)
+    // CLEAN THE MESS
+    query(a)
+  }
 }
 
 export default {
