@@ -1,5 +1,4 @@
 import mysql from 'mysql'
-import moment from 'moment'
 
 import env from '../config/environment'
 
@@ -15,38 +14,13 @@ const connectToDatabase = (callback) => {
   setTimeout(() => { connection.connect(callback) }, 1000)
 }
 
-const query = (query) =>
+const query = q =>
   new Promise((resolve, reject) =>
-    connection.query(query, (error, rows) => {
-      if (error)
-        return reject(error)
-      resolve(rows)
-    })
+    connection.query(
+      q,
+      (error, rows) => error ? reject(error) : resolve(rows)
+    )
   )
-
-const parseSelect = (rows) =>
-  rows[0][0]
-    ? JSON.parse(JSON.stringify(rows[0][0]))
-    : undefined
-
-const user = {
-  find: email => query(`CALL find_user('${email}')`)
-    .then(rows => parseSelect(rows))
-}
-
-const token = {
-  save: (token, userId) => query(
-    `CALL insert_token(
-      '${token}',
-      '${moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss')}',
-      ${userId}
-    );`),
-
-  check: (token) => query(`CALL check_token('${token}');`)
-    .then(rows => parseSelect(rows)),
-
-  remove: (token) => query(`CALL remove_token('${token}');`)
-}
 
 const note = {
   create: (header, text, order, userId) => query(
@@ -77,30 +51,28 @@ const notes = {
   ),
 
   reorder: newOrder => {
-    const whenThen = newOrder.reduce((acc, cur) =>
-      `${acc}WHEN ${cur.id} THEN ${cur.order}
-      `, '')
+    const whenThen = newOrder
+      .reduce(
+        (acc, cur) => `${acc}WHEN ${cur.id} THEN ${cur.order}
+        `, '')
 
-    const ids = newOrder.reduce((acc, cur) =>
-      `${acc},${cur.id}`, '').slice(1)
+    const ids = newOrder
+      .reduce((acc, cur) => `${acc},${cur.id}`, '')
+      .slice(1)
 
-    const a =
+    query(
       `UPDATE notes SET note_order =
         CASE id
           ${whenThen}
         END
       WHERE id IN (${ids})`
-
-    console.log(a)
-    // CLEAN THE MESS
-    query(a)
+    )
   }
 }
 
 export default {
   connectToDatabase,
-  user,
-  token,
+  query,
   note,
   notes
 }

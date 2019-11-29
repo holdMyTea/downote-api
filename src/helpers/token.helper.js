@@ -33,7 +33,7 @@ const resolveToken = (body, cookies) => {
    * Checks tokens from body and cookies of the request.
    * @param body body of the request
    * @param cookies cookies from the request
-   * @returns a a valid token or an error object
+   * @returns a valid token or throws an error
    */
 const validateToken = (body, cookies) => {
   const token = resolveToken(body, cookies)

@@ -1,10 +1,10 @@
 import createError from 'http-errors'
 
-import db from '../services/db'
+import db from '../db'
 import token from './token.controller'
 
 const create = async (body, cookies) => {
-  const user = (await token.verify(body, cookies)).user_id
+  const userId = await token.verify(body, cookies)
 
   if (body && body.order && (body.header || body.text)) {
     try {
@@ -12,7 +12,7 @@ const create = async (body, cookies) => {
         body.header,
         body.text,
         body.order,
-        user
+        userId
       )
     } catch (error) {
       throw createError(500, 'Internal server error')

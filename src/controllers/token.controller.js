@@ -1,7 +1,8 @@
 import createError from 'http-errors'
 
 import { createToken, validateToken } from '../helpers/token.helper'
-import db from '../services/db'
+import user from '../db/user'
+import token from '../db/token'
 
 const isEmailValid = email => /(\w)+@(\w)+\.{1}\w{1,5}/.test(email)
 
@@ -9,7 +10,7 @@ const create = async ({ email, pass }) => {
   if (isEmailValid(email) && pass) {
     let record
     try {
-      record = await db.user.find(email)
+      record = await user.find(email)
     } catch (error) {
       throw createError(500, 'Internal server error')
     }
@@ -19,19 +20,24 @@ const create = async ({ email, pass }) => {
     if (record.password !== pass) // user exists, but the pass is wrong
       throw createError(401, 'Wrong login credentials')
 
-    const token = createToken()
-    db.token.save(token, record.id) // saving token to db
-    return token
+    const t = createToken()
+    try {
+      await token.save(t, record.id) // saving token to db
+    } catch (error) {
+      throw createError(500, 'Internal server error')
+    }
+
+    return t
   }
   throw createError(400, 'Required parameters are missing')
 }
 
 const verify = async (body, cookies) => {
-  const token = validateToken(body, cookies)
+  const t = validateToken(body, cookies)
 
   let record
   try {
-    record = await db.token.check(token)
+    record = await token.check(t)
   } catch (error) {
     throw createError(500, 'Internal server error')
   }
@@ -43,10 +49,10 @@ const verify = async (body, cookies) => {
 }
 
 const remove = async (body, cookies) => {
-  const token = validateToken(body, cookies)
+  const t = validateToken(body, cookies)
 
   try {
-    await db.token.remove(token)
+    await token.remove(t)
   } catch (error) {
     throw createError(500, 'Internal server error')
   }

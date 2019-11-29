@@ -8,7 +8,7 @@ import noteRoute from './routes/note.route'
 import notesRoute from './routes/notes.route'
 
 import env from './config/environment'
-import db from './services/db'
+import db from './db'
 
 const app = express()
 
