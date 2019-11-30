@@ -1,19 +1,19 @@
 import createError from 'http-errors'
 
-import db from '../db'
+import note from '../db/note'
 import token from './token.controller'
 
 const create = async (body, cookies) => {
-  const userId = await token.verify(body, cookies)
+  const userId = (await token.verify(body, cookies))['user_id']
 
   if (body && body.order && (body.header || body.text)) {
     try {
-      return await db.note.create(
+      return (await note.create(
         body.header,
         body.text,
         body.order,
         userId
-      )
+      ))['insertId']
     } catch (error) {
       throw createError(500, 'Internal server error')
     }
@@ -25,34 +25,44 @@ const create = async (body, cookies) => {
 const update = async (body, cookies) => {
   await token.verify(body, cookies)
 
+  let record
   if (body && body.id && (body.header || body.text)) {
     try {
-      await db.note.update(
+      record = (await note.update(
         body.id,
         body.header,
         body.text
-      )
-
-      return body.id
+      ))['affectedRows']
     } catch (error) {
       throw createError(500, 'Internal server error')
     }
+
+    if (record === 0)
+      throw createError(400, `Note with id ${body.id} doesn't exist`)
+
+    return body.id
+  } else {
+    throw createError(400, 'Request should contain "id" AND ("header" OR "text")')
   }
 }
 
 const remove = async (body, cookies) => {
   await token.verify(body, cookies)
 
+  let record
   if (body && body.id) {
     try {
-      await db.note.delete(
-        body.id
-      )
-
-      return body.id
+      record = (await note.remove(body.id))['affectedRows']
     } catch (error) {
       throw createError(500, 'Internal server error')
     }
+
+    if (record === 0)
+      throw createError(400, `Note with id ${body.id} doesn't exist`)
+
+    return body.id
+  } else {
+    throw createError(400, '"id" property is missing')
   }
 }
 

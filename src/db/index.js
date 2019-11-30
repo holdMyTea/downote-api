@@ -22,29 +22,6 @@ const query = q =>
     )
   )
 
-const note = {
-  create: (header, text, order, userId) => query(
-    `CALL insert_note(
-      '${header || null}',
-      '${text || null}',
-      ${order},
-      ${userId}
-    );`
-  ).then(rows => parseSelect(rows)['LAST_INSERT_ID()']),
-
-  update: (id, header, text) => query(
-    `CALL update_note_content(
-      ${id},
-      '${header || null}',
-      '${text || null}'
-    );`
-  ),
-
-  delete: id => query(
-    `CALL remove_note(${id});`
-  )
-}
-
 const notes = {
   get: userId => query(
     `CALL get_user_notes(${userId});`
@@ -73,6 +50,5 @@ const notes = {
 export default {
   connectToDatabase,
   query,
-  note,
   notes
 }
