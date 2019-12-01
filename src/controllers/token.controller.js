@@ -1,8 +1,8 @@
 import createError from 'http-errors'
 
 import { createToken, validateToken } from '../helpers/token.helper'
-import user from '../db/user'
-import token from '../db/token'
+import user from '../db/user.db'
+import token from '../db/token.db'
 
 const isEmailValid = email => /(\w)+@(\w)+\.{1}\w{1,5}/.test(email)
 

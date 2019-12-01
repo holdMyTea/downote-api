@@ -12,9 +12,12 @@ router.get('/', asyncHandler(async (req, res) => {
 }))
 
 router.put('/reorder', asyncHandler(async (req, res) => {
-  await controller.reorder(req.body, req.cookies)
+  const result = await controller.reorder(req.body, req.cookies)
 
-  res.status(200).end()
+  res.status(200).json({
+    affectedRows: result['affectedRows'],
+    changedRows: result['changedRows']
+  })
 }))
 
 export default router

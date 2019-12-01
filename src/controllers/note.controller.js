@@ -1,6 +1,6 @@
 import createError from 'http-errors'
 
-import note from '../db/note'
+import note from '../db/note.db'
 import token from './token.controller'
 
 const create = async (body, cookies) => {

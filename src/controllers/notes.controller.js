@@ -1,13 +1,13 @@
 import createError from 'http-errors'
 
-import db from '../db'
+import notes from '../db/notes.db'
 import token from './token.controller'
 
 const getAll = async (body, cookies) => {
-  const userId = await token.verify(body, cookies)
+  const userId = (await token.verify(body, cookies))['user_id']
 
   try {
-    return (await db.notes.get(userId))[0]
+    return await notes.getByUser(userId)
   } catch (error) {
     throw createError(500, 'Internal server error')
   }
@@ -37,7 +37,7 @@ const reorder = async (body, cookies) => {
     }
 
     try {
-      console.log(db.notes.reorder(body.newOrder))
+      return await notes.reorder(body.newOrder)
     } catch (error) {
       throw createError(500, 'Internal server error')
     }

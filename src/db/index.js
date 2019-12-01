@@ -22,33 +22,7 @@ const query = q =>
     )
   )
 
-const notes = {
-  get: userId => query(
-    `CALL get_user_notes(${userId});`
-  ),
-
-  reorder: newOrder => {
-    const whenThen = newOrder
-      .reduce(
-        (acc, cur) => `${acc}WHEN ${cur.id} THEN ${cur.order}
-        `, '')
-
-    const ids = newOrder
-      .reduce((acc, cur) => `${acc},${cur.id}`, '')
-      .slice(1)
-
-    query(
-      `UPDATE notes SET note_order =
-        CASE id
-          ${whenThen}
-        END
-      WHERE id IN (${ids})`
-    )
-  }
-}
-
 export default {
   connectToDatabase,
-  query,
-  notes
+  query
 }
