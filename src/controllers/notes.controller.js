@@ -14,7 +14,7 @@ const getAll = async (body, cookies) => {
 }
 
 const reorder = async (body, cookies) => {
-  await token.verify(body, cookies)
+  const userId = (await token.verify(body, cookies))['user_id']
 
   if (body && body.newOrder && Array.isArray(body.newOrder)) {
     const idSet = new Set()
@@ -36,11 +36,17 @@ const reorder = async (body, cookies) => {
       throw createError(400, `Id values must be unique`)
     }
 
+    let result
     try {
-      return await notes.reorder(body.newOrder)
+      result = await notes.reorder(body.newOrder, userId)
     } catch (error) {
       throw createError(500, 'Internal server error')
     }
+
+    if (result['affectedRows'] === 0)
+      throw createError(400, `No matched rows`)
+
+    return result
   }
 }
 

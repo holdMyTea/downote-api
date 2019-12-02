@@ -10,16 +10,16 @@ const create = (header, text, order, userId) => db.query(
   );`
 )
 
-const update = (id, header, text) => db.query(
+const update = (id, header, text, userId) => db.query(
   `UPDATE notes SET
   note_header = '${header || null}',
   note_text = '${text || null}',
   updated_time = CURRENT_TIMESTAMP
-  WHERE id = ${id};`
+  WHERE id = ${id} AND user_id = ${userId};`
 )
 
-const remove = id => db.query(
-  `DELETE FROM downote.notes WHERE id = ${id} LIMIT 1;`
+const remove = (id, userId) => db.query(
+  `DELETE FROM downote.notes WHERE id = ${id} AND user_id = ${userId} LIMIT 1;`
 )
 
 export default {

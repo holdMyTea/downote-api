@@ -23,7 +23,7 @@ const create = async (body, cookies) => {
 }
 
 const update = async (body, cookies) => {
-  await token.verify(body, cookies)
+  const userId = (await token.verify(body, cookies))['user_id']
 
   let record
   if (body && body.id && (body.header || body.text)) {
@@ -31,7 +31,8 @@ const update = async (body, cookies) => {
       record = (await note.update(
         body.id,
         body.header,
-        body.text
+        body.text,
+        userId
       ))['affectedRows']
     } catch (error) {
       throw createError(500, 'Internal server error')
@@ -47,12 +48,12 @@ const update = async (body, cookies) => {
 }
 
 const remove = async (body, cookies) => {
-  await token.verify(body, cookies)
+  const userId = (await token.verify(body, cookies))['user_id']
 
   let record
   if (body && body.id) {
     try {
-      record = (await note.remove(body.id))['affectedRows']
+      record = (await note.remove(body.id, userId))['affectedRows']
     } catch (error) {
       throw createError(500, 'Internal server error')
     }

@@ -6,7 +6,7 @@ const getByUser = userId => db.query(
     WHERE user_id = ${userId};`
 )
 
-const reorder = newOrder => {
+const reorder = (newOrder, userId) => {
   const whenThen = newOrder
     .reduce(
       (acc, cur) => `${acc}WHEN ${cur.id} THEN ${cur.order}
@@ -21,7 +21,7 @@ const reorder = newOrder => {
       CASE id
         ${whenThen}
       END
-    WHERE id IN (${ids})`
+    WHERE id IN (${ids}) AND user_id = ${userId};`
   )
 }
 
