@@ -16,15 +16,15 @@ const createToken = (tokenLenght = 40) => // Generates a random string
 
 const isTokenValid = (token) => /\w{40}/.test(token)
 
-const resolveToken = (body, cookies) => {
-  if (body.token && cookies.token) {
+const resolveToken = (cookies, body) => {
+  if ((body && body.token) && (cookies && cookies.token)) {
     if (body.token === cookies.token)
       return body.token
     throw createError(400, 'Cookie and body tokens mismatch')
   }
-  if (body.token)
+  if (body && body.token)
     return body.token
-  if (cookies.token)
+  if (cookies && cookies.token)
     return cookies.token
   throw createError(400, 'Token is missing')
 }

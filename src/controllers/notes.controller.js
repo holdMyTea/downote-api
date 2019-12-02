@@ -4,7 +4,7 @@ import notes from '../db/notes.db'
 import token from './token.controller'
 
 const getAll = async (body, cookies) => {
-  const userId = (await token.verify(body, cookies))['user_id']
+  const userId = (await token.verify(cookies))['user_id']
 
   try {
     return await notes.getByUser(userId)
@@ -14,7 +14,7 @@ const getAll = async (body, cookies) => {
 }
 
 const reorder = async (body, cookies) => {
-  const userId = (await token.verify(body, cookies))['user_id']
+  const userId = (await token.verify(cookies))['user_id']
 
   if (body && body.newOrder && Array.isArray(body.newOrder)) {
     const idSet = new Set()

@@ -33,7 +33,7 @@ const create = async ({ email, pass }) => {
 }
 
 const verify = async (body, cookies) => {
-  const t = validateToken(body, cookies)
+  const t = validateToken(cookies, body)
 
   let record
   try {
@@ -49,7 +49,7 @@ const verify = async (body, cookies) => {
 }
 
 const remove = async (body, cookies) => {
-  const t = validateToken(body, cookies)
+  const t = validateToken(cookies, body)
 
   try {
     await token.remove(t)

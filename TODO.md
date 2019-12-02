@@ -1,0 +1,13 @@
+- ~~All note order update~~
+- ~~Finish routes~~
+- ~~Fix authorization~~
+- ~~Get rid of procedures~~
+- ~~Allow no "body" token check~~
+- Add id stuff to URL
+- ~~Clear file structure (add .db. part to ./db)~~
+- Add clear messages
+- ~~Normalize imports~~
+- Docs
+- Throw out moment
+- Tests
+- README.md
