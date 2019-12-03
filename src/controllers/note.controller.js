@@ -22,14 +22,14 @@ const create = async (body, cookies) => {
   }
 }
 
-const update = async (body, cookies) => {
+const update = async (body, cookies, noteId) => {
   const userId = (await token.verify(cookies))['user_id']
 
   let record
-  if (body && body.id && (body.header || body.text)) {
+  if (noteId && body && (body.header || body.text)) {
     try {
       record = (await note.update(
-        body.id,
+        noteId,
         body.header,
         body.text,
         userId
@@ -39,31 +39,31 @@ const update = async (body, cookies) => {
     }
 
     if (record === 0)
-      throw createError(400, `Note with id ${body.id} doesn't exist`)
+      throw createError(400, `Note with id ${noteId} doesn't exist`)
 
-    return body.id
+    return noteId
   } else {
     throw createError(400, 'Request should contain "id" AND ("header" OR "text")')
   }
 }
 
-const remove = async (body, cookies) => {
+const remove = async (body, cookies, noteId) => {
   const userId = (await token.verify(cookies))['user_id']
 
   let record
-  if (body && body.id) {
+  if (noteId) {
     try {
-      record = (await note.remove(body.id, userId))['affectedRows']
+      record = (await note.remove(noteId, userId))['affectedRows']
     } catch (error) {
       throw createError(500, 'Internal server error')
     }
 
     if (record === 0)
-      throw createError(400, `Note with id ${body.id} doesn't exist`)
+      throw createError(400, `Note with id ${noteId} doesn't exist`)
 
-    return body.id
+    return noteId
   } else {
-    throw createError(400, '"id" property is missing')
+    throw createError(400, 'Note id is not specified')
   }
 }
 

@@ -3,7 +3,8 @@
 - ~~Fix authorization~~
 - ~~Get rid of procedures~~
 - ~~Allow no "body" token check~~
-- Add id stuff to URL
+- ~~Add id stuff to URL~~
+- jies-ish route logic
 - ~~Clear file structure (add .db. part to ./db)~~
 - Add clear messages
 - ~~Normalize imports~~

@@ -1,4 +1,5 @@
 import createError from 'http-errors'
+import asyncHandler from 'express-async-handler'
 
 import { createToken, validateToken } from '../helpers/token.helper'
 import user from '../db/user.db'
@@ -6,7 +7,9 @@ import token from '../db/token.db'
 
 const isEmailValid = email => /(\w)+@(\w)+\.{1}\w{1,5}/.test(email)
 
-const create = async ({ email, pass }) => {
+const create = asyncHandler(async (req, res) => {
+  const { email, pass } = req.body
+
   if (isEmailValid(email) && pass) {
     let record
     try {
@@ -15,10 +18,11 @@ const create = async ({ email, pass }) => {
       throw createError(500, 'Internal server error')
     }
 
-    if (!record) // empty set -- no user with such email
-      throw createError(401, 'Wrong login credentials')
-    if (record.password !== pass) // user exists, but the pass is wrong
-      throw createError(401, 'Wrong login credentials')
+    // empty set -- no user with such email || or pass mismatch
+    if (!record || record.password !== pass) {
+      res.status(401).json({ error: 'Wrong login credentials' })
+      return
+    }
 
     const t = createToken()
     try {
@@ -27,13 +31,20 @@ const create = async ({ email, pass }) => {
       throw createError(500, 'Internal server error')
     }
 
-    return t
+    res
+      .status(200)
+      .cookie('token', t, {
+        maxAge: 48 * 60 * 60 * 1000,
+        path: '/'
+      })
+      .json({ token: t })
+  } else {
+    res.status(400).json({ error: 'Required parameters are missing' })
   }
-  throw createError(400, 'Required parameters are missing')
-}
+})
 
-const verify = async (body, cookies) => {
-  const t = validateToken(cookies, body)
+const verify = asyncHandler(async (req, res) => {
+  const t = validateToken(req.cookies, req.body)
 
   let record
   try {
@@ -42,21 +53,28 @@ const verify = async (body, cookies) => {
     throw createError(500, 'Internal server error')
   }
 
-  if (!record) // empty set -- no such token
-    throw createError(401, 'Token doesn\'t exist')
+  if (!record) { // empty set -- no such token
+    res.status(401).json({ error: 'Token doesn\'t exist' })
+    return
+  }
 
-  return record
-}
+  res.status(200).json({ message: 'Valid token' })
+})
 
-const remove = async (body, cookies) => {
-  const t = validateToken(cookies, body)
+const remove = asyncHandler(async (req, res) => {
+  const t = validateToken(req.cookies, req.body)
 
   try {
     await token.remove(t)
   } catch (error) {
     throw createError(500, 'Internal server error')
   }
-}
+
+  res
+    .status(200)
+    .clearCookie('token', { path: '/' })
+    .json({ message: 'Token removed' })
+})
 
 export default {
   create,

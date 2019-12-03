@@ -11,14 +11,14 @@ router.post('/', asyncHandler(async (req, res) => {
   res.status(200).json({ noteId })
 }))
 
-router.put('/', asyncHandler(async (req, res) => {
-  const noteId = await controller.update(req.body, req.cookies)
+router.put('/:id', asyncHandler(async (req, res) => {
+  const noteId = await controller.update(req.body, req.cookies, req.params.id)
 
   res.status(200).json({ noteId })
 }))
 
-router.delete('/', asyncHandler(async (req, res) => {
-  const noteId = await controller.remove(req.body, req.cookies)
+router.delete('/:id', asyncHandler(async (req, res) => {
+  const noteId = await controller.remove(req.body, req.cookies, req.params.id)
 
   res.status(200).json({ noteId })
 }))
