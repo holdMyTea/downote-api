@@ -5,6 +5,7 @@
 - ~~Allow no "body" token check~~
 - ~~Add id stuff to URL~~
 - jies-ish route logic
+- Make 4XX handled with res.status(4XX) not throw error
 - ~~Clear file structure (add .db. part to ./db)~~
 - Add clear messages
 - ~~Normalize imports~~

@@ -15,7 +15,12 @@ const check = token => db.query(
   .then(
     () => db.query(`SELECT * FROM tokens WHERE id = BINARY "${token}" LIMIT 1;`)
   )
-  .then(rows => rows[0])
+  .then(rows => {
+    if (rows[0] && rows[0]['user_id']) {
+      return rows[0]['user_id']
+    }
+    return undefined
+  })
 
 const remove = (token) => db.query(`DELETE FROM downote.tokens WHERE id = '${token}';`)
 

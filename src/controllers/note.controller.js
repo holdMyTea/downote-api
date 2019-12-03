@@ -1,14 +1,21 @@
 import createError from 'http-errors'
+import asyncHandler from 'express-async-handler'
 
 import note from '../db/note.db'
-import token from './token.controller'
+import token from '../db/token.db'
 
-const create = async (body, cookies) => {
-  const userId = (await token.verify(cookies))['user_id']
+const addNote = asyncHandler(async (req, res) => {
+  const userId = await token.check(req.cookies.token)
+  if (!userId) {
+    res.status(401).json({ error: 'Invalid token' })
+    return
+  }
 
-  if (body && body.order && (body.header || body.text)) {
+  const body = req.body
+  if (body.order && (body.header || body.text)) {
+    let noteId
     try {
-      return (await note.create(
+      noteId = (await note.create(
         body.header,
         body.text,
         body.order,
@@ -17,16 +24,25 @@ const create = async (body, cookies) => {
     } catch (error) {
       throw createError(500, 'Internal server error')
     }
-  } else {
-    throw createError(400, 'Request should contain "order" AND ("header" OR "text")')
-  }
-}
 
-const update = async (body, cookies, noteId) => {
-  const userId = (await token.verify(cookies))['user_id']
+    res.status(200).json({ noteId })
+  } else {
+    res.status(400).json({ error: 'Request should contain "order" AND ("header" OR "text")' })
+  }
+})
+
+const updateNote = asyncHandler(async (req, res) => {
+  const userId = await token.check(req.cookies.token)
+  if (!userId) {
+    res.status(401).json({ error: 'Invalid token' })
+    return
+  }
+
+  const body = req.body
+  const noteId = req.params.noteId
 
   let record
-  if (noteId && body && (body.header || body.text)) {
+  if (noteId && (body.header || body.text)) {
     try {
       record = (await note.update(
         noteId,
@@ -38,17 +54,25 @@ const update = async (body, cookies, noteId) => {
       throw createError(500, 'Internal server error')
     }
 
-    if (record === 0)
-      throw createError(400, `Note with id ${noteId} doesn't exist`)
+    if (record === 0) {
+      res.status(400).json({ error: `Note with id ${noteId} doesn't exist` })
+      return
+    }
 
-    return noteId
+    res.status(200).json({ noteId })
   } else {
-    throw createError(400, 'Request should contain "id" AND ("header" OR "text")')
+    res.status(400).json({ error: 'Request should contain "header" OR "text"' })
   }
-}
+})
 
-const remove = async (body, cookies, noteId) => {
-  const userId = (await token.verify(cookies))['user_id']
+const deleteNote = asyncHandler(async (req, res) => {
+  const userId = await token.check(req.cookies.token)
+  if (!userId) {
+    res.status(401).json({ error: 'Invalid token' })
+    return
+  }
+
+  const noteId = req.params.noteId
 
   let record
   if (noteId) {
@@ -58,17 +82,19 @@ const remove = async (body, cookies, noteId) => {
       throw createError(500, 'Internal server error')
     }
 
-    if (record === 0)
-      throw createError(400, `Note with id ${noteId} doesn't exist`)
+    if (record === 0) {
+      res.status(400).json({ error: `Note with id ${noteId} doesn't exist` })
+      return
+    }
 
-    return noteId
+    res.status(200).json({ noteId })
   } else {
-    throw createError(400, 'Note id is not specified')
+    res.status(400).json({ error: 'Note id is not specified' })
   }
-}
+})
 
 export default {
-  create,
-  update,
-  remove
+  addNote,
+  updateNote,
+  deleteNote
 }
