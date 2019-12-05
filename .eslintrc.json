@@ -3,9 +3,6 @@
     "parserOptions": {
         "ecmaVersion": 9
     },
-    "rules": {
-        "curly": "off"
-    },
     "env": {
         "mocha": true
     }

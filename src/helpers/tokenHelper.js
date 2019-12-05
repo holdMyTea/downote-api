@@ -1,5 +1,3 @@
-import createError from 'http-errors'
-
 const charDictionary = // An array of charcodes [a-zA-Z0-9]
   Array(10).fill(0).map((value, index) => 48 + index) // [0-9]
     .concat(
@@ -18,30 +16,31 @@ const isTokenValid = (token) => /\w{40}/.test(token)
 
 const resolveToken = (cookies, body) => {
   if ((body && body.token) && (cookies && cookies.token)) {
-    if (body.token === cookies.token)
+    if (body.token === cookies.token) {
       return body.token
-    throw createError(400, 'Cookie and body tokens mismatch')
-  }
-  if (body && body.token)
+    }
+  } else if (body && body.token) {
     return body.token
-  if (cookies && cookies.token)
+  } else if (cookies && cookies.token) {
     return cookies.token
-  throw createError(400, 'Token is missing')
+  }
+  return undefined
 }
 
 /**
    * Checks tokens from body and cookies of the request.
    * @param body body of the request
    * @param cookies cookies from the request
-   * @returns a valid token or throws an error
+   * @returns a valid token or ''
    */
 const validateToken = (body, cookies) => {
   const token = resolveToken(body, cookies)
 
-  if (isTokenValid(token))
+  if (token && isTokenValid(token)) {
     return token
+  }
 
-  throw createError(400, 'Invalid token format')
+  return undefined
 }
 
 export {

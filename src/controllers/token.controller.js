@@ -1,7 +1,7 @@
 import createError from 'http-errors'
 import asyncHandler from 'express-async-handler'
 
-import { createToken, validateToken } from '../helpers/token.helper'
+import { createToken, validateToken } from '../helpers/tokenHelper'
 import user from '../db/user.db'
 import token from '../db/token.db'
 
@@ -45,6 +45,10 @@ const create = asyncHandler(async (req, res) => {
 
 const verify = asyncHandler(async (req, res) => {
   const t = validateToken(req.cookies, req.body)
+  if (!t) {
+    res.status(400).json({ error: 'Token in missing or invalid' })
+    return
+  }
 
   let record
   try {

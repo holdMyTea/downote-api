@@ -36,8 +36,7 @@ describe('POST /token check', () => {
       })
       .expect(200)
       .end((err, res) => {
-        if (err)
-          throw err
+        if (err) { throw err }
 
         const cookies = res.headers['set-cookie'][0]
         const tokenStart = cookies.indexOf('token=') + 6
@@ -70,7 +69,7 @@ describe('POST /token/verify check', () => {
     request(app)
       .post('/token/verify')
       .expect(400)
-      .expect({ error: 'Token is missing' }, done)
+      .expect({ error: 'Token in missing or invalid' }, done)
   })
 
   it('Should respond with 401, wrong token', (done) => {
@@ -86,7 +85,7 @@ describe('POST /token/verify check', () => {
       .post('/token/verify')
       .send({ token: token.slice(1) })
       .expect(400)
-      .expect({ error: 'Invalid token format' }, done)
+      .expect({ error: 'Token in missing or invalid' }, done)
   })
 
   it('Should verify the correct token from cookie', (done) => {
@@ -112,7 +111,7 @@ describe('POST /token/verify check', () => {
       .set('Cookie', `token=${token}`)
       .send({ token: token.toLowerCase() })
       .expect(400)
-      .expect({ error: 'Cookie and body tokens mismatch' }, done)
+      .expect({ error: 'Token in missing or invalid' }, done)
   })
 })
 
@@ -124,8 +123,7 @@ describe('DELETE /token check', () => {
       .expect(200)
       .expect({ message: 'Token removed' })
       .end((err, res) => {
-        if (err)
-          throw err
+        if (err) { throw err }
 
         const cookies = res.headers['set-cookie'][0]
         const tokenStart = cookies.indexOf('token=') + 6

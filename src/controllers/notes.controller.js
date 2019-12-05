@@ -2,12 +2,11 @@ import createError from 'http-errors'
 import asyncHandler from 'express-async-handler'
 
 import notes from '../db/notes.db'
-import token from '../db/token.db'
+import findUser from '../helpers/findUser'
 
 const getAll = asyncHandler(async (req, res) => {
-  const userId = await token.check(req.cookies.token)
+  const userId = await findUser(req, res)
   if (!userId) {
-    res.status(401).json({ error: 'Invalid token' })
     return
   }
 
@@ -22,9 +21,8 @@ const getAll = asyncHandler(async (req, res) => {
 })
 
 const reorder = asyncHandler(async (req, res) => {
-  const userId = await token.check(req.cookies.token)
+  const userId = await findUser(req, res)
   if (!userId) {
-    res.status(401).json({ error: 'Invalid token' })
     return
   }
 
