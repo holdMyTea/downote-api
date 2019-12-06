@@ -1,10 +1,9 @@
-import moment from 'moment'
 import db from './index'
 
 const save = (token, userId) => db.query(
   `INSERT INTO downote.tokens (id, expires_on, user_id) VALUES(
     '${token}',
-    '${moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss')}',
+    CURRENT_TIMESTAMP + INTERVAL 2 DAY,
     ${userId}
   );`
 )
