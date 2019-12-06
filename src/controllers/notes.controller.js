@@ -64,8 +64,8 @@ const reorder = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({
-      affectedRows: result['affectedRows'],
-      changedRows: result['changedRows']
+      notesMatched: result['affectedRows'],
+      notesUpdated: result['changedRows']
     })
   }
 })

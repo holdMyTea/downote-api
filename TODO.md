@@ -8,7 +8,7 @@
 - ~~Separate token validation~~
 - ~~Make 4XX handled with res.status(4XX) not throw error~~
 - ~~Clear file structure (add .db. part to ./db)~~
-- Add clear messages
+- ~~Add clear messages~~
 - ~~Normalize imports~~
 - Docs
 - Throw out moment

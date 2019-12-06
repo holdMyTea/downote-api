@@ -68,16 +68,24 @@ const verify = asyncHandler(async (req, res) => {
 const remove = asyncHandler(async (req, res) => {
   const t = validateToken(req.cookies, req.body)
 
+  let result
   try {
-    await token.remove(t)
+    result = await token.remove(t)
   } catch (error) {
     throw createError(500, 'Internal server error')
   }
 
-  res
-    .status(200)
-    .clearCookie('token', { path: '/' })
-    .json({ message: 'Token removed' })
+  if (result['affectedRows'] === 1) {
+    res
+      .status(200)
+      .clearCookie('token', { path: '/' })
+      .json({ message: 'Token removed' })
+  } else {
+    res
+      .status(401)
+      .clearCookie('token', { path: '/' })
+      .json({ message: 'Token doesn\'t exist' })
+  }
 })
 
 export default {

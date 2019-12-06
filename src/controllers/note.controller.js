@@ -24,7 +24,10 @@ const addNote = asyncHandler(async (req, res) => {
       throw createError(500, 'Internal server error')
     }
 
-    res.status(200).json({ noteId })
+    res.status(200).json({
+      noteId,
+      message: 'Note has been added'
+    })
   } else {
     res.status(400).json({ error: 'Request should contain "order" AND ("header" OR "text")' })
   }
@@ -57,7 +60,10 @@ const updateNote = asyncHandler(async (req, res) => {
       return
     }
 
-    res.status(200).json({ noteId })
+    res.status(200).json({
+      noteId,
+      message: 'Note has been updated'
+    })
   } else {
     res.status(400).json({ error: 'Request should contain "header" OR "text"' })
   }
@@ -84,7 +90,10 @@ const deleteNote = asyncHandler(async (req, res) => {
       return
     }
 
-    res.status(200).json({ noteId })
+    res.status(200).json({
+      noteId,
+      message: 'Note has been deleted'
+    })
   } else {
     res.status(400).json({ error: 'Note id is not specified' })
   }
