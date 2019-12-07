@@ -17,7 +17,16 @@ const getAll = asyncHandler(async (req, res) => {
     throw createError(500, 'Internal server error')
   }
 
-  res.status(200).json(records)
+  const formattedResponse = records.map(n => ({
+    id: n.id,
+    header: n.note_header === 'null' ? undefined : n.note_header,
+    text: n.note_text === 'null' ? undefined : n.note_text,
+    order: n.note_order,
+    created: n.created_time,
+    updated: n.updated_time
+  }))
+
+  res.status(200).json(formattedResponse)
 })
 
 const reorder = asyncHandler(async (req, res) => {

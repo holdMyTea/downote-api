@@ -1,6 +1,6 @@
 FROM node:current-alpine
 
-WORKDIR /home/dowmote/app
+WORKDIR /home/downote/app
 COPY package*.json ./
 RUN npm i
 

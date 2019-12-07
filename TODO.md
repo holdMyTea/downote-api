@@ -10,6 +10,7 @@
 - ~~Clear file structure (add .db. part to ./db)~~
 - ~~Add clear messages~~
 - ~~Normalize imports~~
+- Make real NULL in SQL
 - Docs
 - ~~Throw out moment~~
 - Tests
