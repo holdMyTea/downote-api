@@ -8,7 +8,7 @@
     "start": "babel-node src/index.js",
     "test": "mocha --require @babel/polyfill --require @babel/register"
   },
-  "author": "rise42",
+  "author": "holdMyTea",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
