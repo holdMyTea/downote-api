@@ -43,12 +43,14 @@ app.use((err, req, res, next) => {
 })
 
 db.connectToDatabase(() => {
-  app.listen(
-    env.API_PORT,
-    env.API_HOST,
-    () => console.log(`Server started at ${env.API_HOST}:${env.API_PORT}`)
-  )
   console.log('Database connection established')
+  if (process.env.NODE_ENV !== 'test') {
+    app.listen(
+      env.API_PORT,
+      env.API_HOST,
+      () => console.log(`Server started at ${env.API_HOST}:${env.API_PORT}`)
+    )
+  }
 })
 
 export default app
