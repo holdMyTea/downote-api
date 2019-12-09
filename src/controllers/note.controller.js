@@ -12,20 +12,20 @@ const addNote = asyncHandler(async (req, res) => {
 
   const body = req.body
   if (body.order && (body.header || body.text)) {
-    let noteId
+    let record
     try {
-      noteId = (await note.create(
+      record = await note.create(
         body.header,
         body.text,
         body.order,
         userId
-      ))['insertId']
+      )
     } catch (error) {
       throw createError(500, 'Internal server error')
     }
 
     res.status(200).json({
-      noteId,
+      noteId: Number(record['insertId']),
       message: 'Note has been added'
     })
   } else {
@@ -45,12 +45,12 @@ const updateNote = asyncHandler(async (req, res) => {
   let record
   if (noteId && (body.header || body.text)) {
     try {
-      record = (await note.update(
+      record = await note.update(
         noteId,
         body.header,
         body.text,
         userId
-      ))['affectedRows']
+      )
     } catch (error) {
       throw createError(500, 'Internal server error')
     }
@@ -61,7 +61,7 @@ const updateNote = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({
-      noteId,
+      noteId: Number(noteId),
       message: 'Note has been updated'
     })
   } else {
@@ -80,12 +80,12 @@ const deleteNote = asyncHandler(async (req, res) => {
   let record
   if (noteId) {
     try {
-      record = (await note.remove(noteId, userId))['affectedRows']
+      record = await note.remove(noteId, userId)
     } catch (error) {
       throw createError(500, 'Internal server error')
     }
 
-    if (record === 0) {
+    if (record['affectedRows'] === 0) {
       res.status(400).json({ error: `Note with id ${noteId} doesn't exist` })
       return
     }
