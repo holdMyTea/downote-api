@@ -1,23 +1,15 @@
 import request from 'supertest'
-import app from '../src/index'
+
+import { app, createToken, isNoteIdValid, randomNumber } from './utils'
 
 describe('POST /note check', () => {
-  const isNoteIdValid = noteId => noteId && noteId > 0 && Number.isInteger(noteId)
-  const randomNumber = () => Math.random().toPrecision(8).slice(2)
-
   let token
   let createdNotes = []
 
   before((done) => {
-    request(app)
-      .post('/token')
-      .send({
-        email: 'keepo@mail.com',
-        pass: '456456'
-      })
-      .expect(200)
-      .end((err, res) => {
-        token = res.body.token
+    createToken('keepo@mail.com', '456456')
+      .then(t => {
+        token = t
         done()
       })
   })

@@ -1,7 +1,5 @@
 import request from 'supertest'
-import app from '../src/index'
-
-const isTokenValid = (token) => /[0-9a-zA-Z]{40}/.test(token)
+import { app, isTokenValid } from './utils'
 
 let token
 
