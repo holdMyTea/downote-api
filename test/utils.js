@@ -46,6 +46,12 @@ const randomNote = () => ({
   order: 1
 })
 
+const compareNotes = (resNote, savedNote) =>
+  savedNote.id === resNote.id &&
+  savedNote.text === resNote.text &&
+  savedNote.header === resNote.header &&
+  savedNote.order === resNote.order
+
 export {
   createToken,
   createNote,
@@ -53,5 +59,6 @@ export {
   isTokenValid,
   randomNumber,
   randomNote,
+  compareNotes,
   app
 }

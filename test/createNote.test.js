@@ -1,6 +1,6 @@
 import request from 'supertest'
 
-import { app, createToken, isNoteIdValid, randomNumber } from './utils'
+import { app, createToken, isNoteIdValid, randomNumber, compareNotes } from './utils'
 
 describe('POST /note check', () => {
   let token
@@ -113,20 +113,6 @@ describe('POST /note check', () => {
       .end((err, res) => {
         if (err) { throw err }
 
-        const compareNotes = (resNote, savedNote) => {
-          if (Object.keys(savedNote).length + 2 !== Object.keys(resNote).length) {
-            return false
-          }
-
-          Object.entries(resNote).forEach(([key, value]) => {
-            if (value !== savedNote[key]) {
-              return false
-            }
-          })
-
-          return true
-        }
-
         createdNotes.forEach(note => { 
           if (!res.body.find(el => compareNotes(el, note))) {
             throw new Error('The note has not been added: ' + JSON.stringify(note))
@@ -144,8 +130,9 @@ describe('POST /note check', () => {
         header: 'Test header',
         text: 'Test text'
       })
-      .expect(400)
-      .expect({ error: 'Request should contain "order" AND ("header" OR "text")' }, done)
+      .expect(400, {
+        error: 'Request should contain "order" AND ("header" OR "text")'
+      }, done)
   })
 
   it('Should not create a note w/o "header" or "text" and give 400', (done) => {
@@ -155,8 +142,9 @@ describe('POST /note check', () => {
       .send({
         order: 1
       })
-      .expect(400)
-      .expect({ error: 'Request should contain "order" AND ("header" OR "text")' }, done)
+      .expect(400,
+        { error: 'Request should contain "order" AND ("header" OR "text")'
+      }, done)
   })
 
   it('Should not create a note w/o token in cookie and give 401', (done) => {
@@ -167,8 +155,9 @@ describe('POST /note check', () => {
         text: 'Test text',
         order: 1
       })
-      .expect(401)
-      .expect({ error: 'Invalid token' }, done)
+      .expect(401,{
+        error: 'Invalid token'
+      }, done)
   })
 
   it('Should not create a note with a wrong token in cookie and give 401', (done) => {
@@ -180,7 +169,8 @@ describe('POST /note check', () => {
         text: 'Test text',
         order: 1
       })
-      .expect(401)
-      .expect({ error: 'Invalid token' }, done)
+      .expect(401,
+        { error: 'Invalid token'
+      }, done)
   })
 })
