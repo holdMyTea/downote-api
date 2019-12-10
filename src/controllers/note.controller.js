@@ -40,7 +40,12 @@ const updateNote = asyncHandler(async (req, res) => {
   }
 
   const body = req.body
-  const noteId = req.params.noteId
+  const noteId = Number(req.params.noteId)
+
+  if (!Number.isInteger(noteId)) {
+    res.status(400).json({ error: 'Note id is absent or invalid' })
+    return
+  }
 
   let record
   if (noteId && (body.header || body.text)) {
@@ -75,7 +80,12 @@ const deleteNote = asyncHandler(async (req, res) => {
     return
   }
 
-  const noteId = req.params.noteId
+  const noteId = Number(req.params.noteId)
+
+  if (!Number.isInteger(noteId)) {
+    res.status(400).json({ error: 'Note id is absent or invalid' })
+    return
+  }
 
   let record
   if (noteId) {

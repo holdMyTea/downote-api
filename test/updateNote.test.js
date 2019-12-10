@@ -7,7 +7,7 @@ describe('PUT /note check', () => {
   let initialNotes = [] // array of the notes that will be created before the suite
   let updatedNotes = [] // array of the notes that will be updated in tests
 
-  let firstBodyCheck
+  let firstBodyCheck // intermediate variable for /notes body
 
   before((done) => {
     // generating test notes for the suite
@@ -16,7 +16,7 @@ describe('PUT /note check', () => {
     initialNotes.push(randomNote())
 
     // getting token for the account
-    createToken('kippa@mail.com', '789789')
+    createToken('keepo@mail.com', '456456')
       .then(t => (token = t))
       .then(() => Promise.all([ // saving generated notes
         createNote(token, initialNotes[0]).then(res => (initialNotes[0].id = res.noteId)),
@@ -109,6 +109,7 @@ describe('PUT /note check', () => {
           }
         })
 
+        // saving current body for a later assertion
         firstBodyCheck = res.body
         done()
       })
@@ -124,7 +125,7 @@ describe('PUT /note check', () => {
       }, done)
   })
 
-  it('Should not update a note w/o tokne in cookie and give 400', (done) => {
+  it('Should not update a note w/o token in cookie and give 401', (done) => {
     request(app)
       .put(`/note/${updatedNotes[1].id}`)
       .send({
@@ -136,7 +137,7 @@ describe('PUT /note check', () => {
       }, done)
   })
 
-  it('Should not update a note w/o tokne in cookie and give 400', (done) => {
+  it('Should not update a note with a wrong token in cookie and give 401', (done) => {
     request(app)
       .put(`/note/${updatedNotes[2].id}`)
       .set('Cookie', `token=TOKENNOTTOKEN`)
@@ -146,6 +147,30 @@ describe('PUT /note check', () => {
       })
       .expect(401, {
         error: 'Invalid token'
+      }, done)
+  })
+
+  it('Should give 404 when called w/o id in URL', (done) => {
+    request(app)
+      .put(`/note`)
+      .set('Cookie', `token=${token}`)
+      .send({
+        header: 'newHeader' + randomNumber(),
+        text: 'newText' + randomNumber()
+      })
+      .expect(404, done)
+  })
+
+  it('Should give 400 when called w/o id in URL', (done) => {
+    request(app)
+      .put(`/note/notReallyAnIDhere`)
+      .set('Cookie', `token=${token}`)
+      .send({
+        header: 'newHeader' + randomNumber(),
+        text: 'newText' + randomNumber()
+      })
+      .expect(400,{
+        error: 'Note id is absent or invalid'
       }, done)
   })
 
