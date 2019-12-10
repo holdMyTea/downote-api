@@ -161,7 +161,7 @@ describe('PUT /note check', () => {
       .expect(404, done)
   })
 
-  it('Should give 400 when called w/o id in URL', (done) => {
+  it('Should give 400 when called with invalid id', (done) => {
     request(app)
       .put(`/note/notReallyAnIDhere`)
       .set('Cookie', `token=${token}`)
@@ -170,7 +170,7 @@ describe('PUT /note check', () => {
         text: 'newText' + randomNumber()
       })
       .expect(400,{
-        error: 'Note id is absent or invalid'
+        error: 'Note id is invalid'
       }, done)
   })
 

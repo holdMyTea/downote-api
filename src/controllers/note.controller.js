@@ -43,7 +43,7 @@ const updateNote = asyncHandler(async (req, res) => {
   const noteId = Number(req.params.noteId)
 
   if (!Number.isInteger(noteId)) {
-    res.status(400).json({ error: 'Note id is absent or invalid' })
+    res.status(400).json({ error: 'Note id is invalid' })
     return
   }
 
@@ -83,7 +83,7 @@ const deleteNote = asyncHandler(async (req, res) => {
   const noteId = Number(req.params.noteId)
 
   if (!Number.isInteger(noteId)) {
-    res.status(400).json({ error: 'Note id is absent or invalid' })
+    res.status(400).json({ error: 'Note id is invalid' })
     return
   }
 
