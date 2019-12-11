@@ -62,7 +62,7 @@ describe('DELETE /note check', () => {
 
   it('Should not delete a note with a wrong token in cookie and give 401', (done) => {
     request(app)
-      .delete(`/note/${notes[2].id}`)
+      .delete(`/note/${notes[1].id}`)
       .set('Cookie', `token=TOKENNOTTOKEN`)
       .expect(401, {
         error: 'Invalid token'

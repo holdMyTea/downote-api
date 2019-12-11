@@ -43,7 +43,7 @@ const reorder = asyncHandler(async (req, res) => {
 
     body.newOrder.forEach((i, index) => {
       if (!(i.id && i.order)) {
-        res.status(400).json({ error: `Object under ${index} doesn't have required params` })
+        res.status(400).json({ error: `Object under ${index} index doesn't have required params` })
         return
       }
       idSet.add(i.id)
@@ -51,12 +51,12 @@ const reorder = asyncHandler(async (req, res) => {
     })
 
     if (orderSet.size < body.newOrder.length) {
-      res.status(400).json({ error: `Order values must be unique` })
+      res.status(400).json({ error: 'Order values must be unique' })
       return
     }
 
     if (idSet.size < body.newOrder.length) {
-      res.status(400).json({ error: `Id values must be unique` })
+      res.status(400).json({ error: 'Id values must be unique' })
       return
     }
 
@@ -68,7 +68,7 @@ const reorder = asyncHandler(async (req, res) => {
     }
 
     if (result['affectedRows'] === 0) {
-      res.status(400).json({ error: `No matched rows` })
+      res.status(400).json({ error: 'No matched rows' })
       return
     }
 
@@ -76,6 +76,8 @@ const reorder = asyncHandler(async (req, res) => {
       notesMatched: result['affectedRows'],
       notesUpdated: result['changedRows']
     })
+  } else {
+    res.status(400).json({ error: 'Wrong body, should be { "newOrder": [] }' })
   }
 })
 
