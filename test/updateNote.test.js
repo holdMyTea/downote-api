@@ -4,8 +4,8 @@ import { app, createToken, createNote, randomNumber, randomNote, compareNotes } 
 
 describe('PUT /note check', () => {
   let token // access token to the test account
-  let initialNotes = [] // array of the notes that will be created before the suite
-  let updatedNotes = [] // array of the notes that will be updated in tests
+  const initialNotes = [] // array of the notes that will be created before the suite
+  const updatedNotes = [] // array of the notes that will be updated in tests
 
   let firstBodyCheck // intermediate variable for /notes body
 
@@ -27,7 +27,7 @@ describe('PUT /note check', () => {
   })
 
   it('Should update a note and give 200', (done) => {
-    // this is how the note hsould look like after the update
+    // this is how the note should look like after the update
     const note = {
       id: initialNotes[0].id,
       order: initialNotes[0].order,
@@ -96,14 +96,14 @@ describe('PUT /note check', () => {
         if (err) { throw err }
 
         // checking that all updated notes are present
-        updatedNotes.forEach(note => { 
+        updatedNotes.forEach(note => {
           if (!res.body.find(el => compareNotes(el, note))) {
             throw new Error('The note has not been updated: ' + JSON.stringify(note))
           }
         })
 
         // checking that initial notes are no longer present
-        initialNotes.forEach(note => { 
+        initialNotes.forEach(note => {
           if (res.body.find(el => compareNotes(el, note))) {
             throw new Error('The initial note is still present: ' + JSON.stringify(note))
           }
@@ -169,7 +169,7 @@ describe('PUT /note check', () => {
         header: 'newHeader' + randomNumber(),
         text: 'newText' + randomNumber()
       })
-      .expect(400,{
+      .expect(400, {
         error: 'Note id is invalid'
       }, done)
   })
@@ -179,5 +179,20 @@ describe('PUT /note check', () => {
       .get('/notes')
       .set('Cookie', `token=${token}`)
       .expect(200, firstBodyCheck, done)
+  })
+
+  after(done => {
+    Promise.all(
+      initialNotes.map(note =>
+        new Promise(resolve =>
+          request(app)
+            .delete(`/note/${note.id}`)
+            .set('Cookie', `token=${token}`)
+            .expect(200, {
+              noteId: note.id,
+              message: 'Note has been deleted'
+            }, resolve)
+        ))
+    ).then(() => done())
   })
 })

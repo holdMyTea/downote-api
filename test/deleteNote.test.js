@@ -1,37 +1,40 @@
 import request from 'supertest'
 
-import { app, createToken } from './utils'
+import { app, createToken, randomNote, createNote } from './utils'
 
-describe('PUT /note check', () => {
+describe('DELETE /note check', () => {
   let token // access token to the test account
-  let expectedNotes // array of the notes that will be created before the suite
+  let notes // array of the notes that will be created before the suite
 
   before((done) => {
     // getting token for the account
     createToken('keepo@mail.com', '456456')
       .then(t => (token = t))
-      .then(() => 
-        new Promise((resolve, reject) => {
-          request(app) // requesting existing notes to work with
-            .get('/notes')
-            .set('Cookie', `token=${token}`)
-            .expect(200)
-            .end((err, res) => {
-              if (err) { reject(err) }
-              resolve(res.body)
-            })
+      .then(() => Promise.all([ // saving generated notes
+        createNote(token, randomNote()),
+        createNote(token, randomNote()),
+        createNote(token, randomNote())
+      ]))
+      .then(() => new Promise((resolve, reject) =>
+        request(app)
+          .get('/notes')
+          .set('Cookie', `token=${token}`)
+          .end((err, res) => {
+            if (err) { reject(err) }
+            resolve(res.body)
           })
-      .then((body) => {
-        expectedNotes = body
+      ))
+      .then(body => {
+        notes = body
         done()
       })
-  )})
+  })
 
   it('Should delete a note and give 200', (done) => {
-    const noteId = expectedNotes[0].id
+    const noteId = notes[0].id
 
     // removing the note from the saved array for the further assertion
-    expectedNotes.shift()
+    notes.shift()
 
     request(app)
       .delete(`/note/${noteId}`)
@@ -46,12 +49,12 @@ describe('PUT /note check', () => {
     request(app)
       .get('/notes')
       .set('Cookie', `token=${token}`)
-      .expect(200, expectedNotes, done)
+      .expect(200, notes, done)
   })
 
   it('Should not update a note w/o token in cookie and give 401', (done) => {
     request(app)
-      .delete(`/note/${expectedNotes[1].id}`)
+      .delete(`/note/${notes[1].id}`)
       .expect(401, {
         error: 'Invalid token'
       }, done)
@@ -59,7 +62,7 @@ describe('PUT /note check', () => {
 
   it('Should not delete a note with a wrong token in cookie and give 401', (done) => {
     request(app)
-      .delete(`/note/${expectedNotes[2].id}`)
+      .delete(`/note/${notes[2].id}`)
       .set('Cookie', `token=TOKENNOTTOKEN`)
       .expect(401, {
         error: 'Invalid token'
@@ -77,7 +80,7 @@ describe('PUT /note check', () => {
     request(app)
       .delete(`/note/notReallyAnIDhere`)
       .set('Cookie', `token=${token}`)
-      .expect(400,{
+      .expect(400, {
         error: 'Note id is invalid'
       }, done)
   })
@@ -86,6 +89,21 @@ describe('PUT /note check', () => {
     request(app)
       .get('/notes')
       .set('Cookie', `token=${token}`)
-      .expect(200, expectedNotes, done)
+      .expect(200, notes, done)
+  })
+
+  after(done => {
+    Promise.all(
+      notes.map(note =>
+        new Promise(resolve =>
+          request(app)
+            .delete(`/note/${note.id}`)
+            .set('Cookie', `token=${token}`)
+            .expect(200, {
+              noteId: note.id,
+              message: 'Note has been deleted'
+            }, resolve)
+        ))
+    ).then(() => done())
   })
 })

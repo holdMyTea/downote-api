@@ -4,7 +4,7 @@ import { app, createToken, isNoteIdValid, randomNumber, compareNotes } from './u
 
 describe('POST /note check', () => {
   let token
-  let createdNotes = []
+  const createdNotes = []
 
   before((done) => {
     createToken('keepo@mail.com', '456456')
@@ -29,7 +29,7 @@ describe('POST /note check', () => {
       .end((err, res) => {
         if (err) { throw err }
 
-        const {noteId, message} = res.body
+        const { noteId, message } = res.body
 
         if (message && message === 'Note has been added') {
           if (isNoteIdValid(noteId)) {
@@ -59,7 +59,7 @@ describe('POST /note check', () => {
       .end((err, res) => {
         if (err) { throw err }
 
-        const {noteId, message} = res.body
+        const { noteId, message } = res.body
 
         if (message && message === 'Note has been added') {
           if (isNoteIdValid(noteId)) {
@@ -89,7 +89,7 @@ describe('POST /note check', () => {
       .end((err, res) => {
         if (err) { throw err }
 
-        const {noteId, message} = res.body
+        const { noteId, message } = res.body
 
         if (message && message === 'Note has been added') {
           if (isNoteIdValid(noteId)) {
@@ -113,7 +113,7 @@ describe('POST /note check', () => {
       .end((err, res) => {
         if (err) { throw err }
 
-        createdNotes.forEach(note => { 
+        createdNotes.forEach(note => {
           if (!res.body.find(el => compareNotes(el, note))) {
             throw new Error('The note has not been added: ' + JSON.stringify(note))
           }
@@ -142,8 +142,8 @@ describe('POST /note check', () => {
       .send({
         order: 1
       })
-      .expect(400,
-        { error: 'Request should contain "order" AND ("header" OR "text")'
+      .expect(400, {
+        error: 'Request should contain "order" AND ("header" OR "text")'
       }, done)
   })
 
@@ -155,7 +155,7 @@ describe('POST /note check', () => {
         text: 'Test text',
         order: 1
       })
-      .expect(401,{
+      .expect(401, {
         error: 'Invalid token'
       }, done)
   })
@@ -171,6 +171,21 @@ describe('POST /note check', () => {
       })
       .expect(401,
         { error: 'Invalid token'
-      }, done)
+        }, done)
+  })
+
+  after(done => {
+    Promise.all(
+      createdNotes.map(note =>
+        new Promise(resolve =>
+          request(app)
+            .delete(`/note/${note.id}`)
+            .set('Cookie', `token=${token}`)
+            .expect(200, {
+              noteId: note.id,
+              message: 'Note has been deleted'
+            }, resolve)
+        ))
+    ).then(() => done())
   })
 })

@@ -14,4 +14,5 @@
 - Docs
 - ~~Throw out moment~~
 - Tests
+- Clean up before() and after()
 - README.md
