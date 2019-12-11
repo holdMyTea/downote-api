@@ -13,6 +13,6 @@
 - Make real NULL in SQL
 - Docs
 - ~~Throw out moment~~
-- Tests
-- Clean up before() and after()
+- ~~Tests~~
+- ~~Clean up before() and after()~~
 - README.md

@@ -12,14 +12,9 @@ const createToken = (email, pass) =>
       })
       .expect(200)
       .end((err, res) => {
-        if (err) { 
-          console.log(err)
-          reject(err)
-        }
-
+        if (err) { reject(err) }
         resolve(res.body.token)
-      })
-  )
+      }))
 
 const createNote = (token, note) =>
   new Promise((resolve, reject) =>
@@ -30,10 +25,8 @@ const createNote = (token, note) =>
       .expect(200)
       .end((err, res) => {
         if (err) { reject(err) }
-
         resolve(res.body)
-      })
-)
+      }))
 
 const isNoteIdValid = noteId => noteId && noteId > 0 && Number.isInteger(noteId)
 
@@ -52,6 +45,44 @@ const compareNotes = (resNote, savedNote) =>
   savedNote.header === resNote.header &&
   savedNote.order === resNote.order
 
+const beforeForNotes = () => {
+  let token
+
+  return createToken('keepo@mail.com', '456456')
+    .then(t => (token = t))
+    .then(() => Promise.all([
+      createNote(token, randomNote()),
+      createNote(token, randomNote()),
+      createNote(token, randomNote())
+    ]))
+    .then(() => new Promise((resolve, reject) =>
+      request(app)
+        .get('/notes')
+        .set('Cookie', `token=${token}`)
+        .end((err, res) => {
+          if (err) { reject(err) }
+          resolve(res.body)
+        })
+    ))
+    .then(body => ({
+      token,
+      notes: body
+    }))
+}
+
+const afterForNotes = (token, notes) =>
+  Promise.all(notes.map(note =>
+    new Promise(resolve =>
+      request(app)
+        .delete(`/note/${note.id}`)
+        .set('Cookie', `token=${token}`)
+        .expect(200, {
+          noteId: note.id,
+          message: 'Note has been deleted'
+        }, resolve)
+    ))
+  )
+
 export {
   createToken,
   createNote,
@@ -60,5 +91,7 @@ export {
   randomNumber,
   randomNote,
   compareNotes,
+  beforeForNotes,
+  afterForNotes,
   app
 }

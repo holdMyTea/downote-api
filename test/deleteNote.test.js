@@ -1,34 +1,15 @@
 import request from 'supertest'
 
-import { app, createToken, randomNote, createNote } from './utils'
+import { app, beforeForNotes, afterForNotes } from './utils'
 
 describe('DELETE /note check', () => {
   let token // access token to the test account
   let notes // array of the notes that will be created before the suite
 
-  before((done) => {
-    // getting token for the account
-    createToken('keepo@mail.com', '456456')
-      .then(t => (token = t))
-      .then(() => Promise.all([ // saving generated notes
-        createNote(token, randomNote()),
-        createNote(token, randomNote()),
-        createNote(token, randomNote())
-      ]))
-      .then(() => new Promise((resolve, reject) =>
-        request(app)
-          .get('/notes')
-          .set('Cookie', `token=${token}`)
-          .end((err, res) => {
-            if (err) { reject(err) }
-            resolve(res.body)
-          })
-      ))
-      .then(body => {
-        notes = body
-        done()
-      })
-  })
+  before(() => beforeForNotes().then(res => {
+    token = res.token
+    notes = res.notes
+  }))
 
   it('Should delete a note and give 200', (done) => {
     const noteId = notes[0].id
@@ -92,18 +73,5 @@ describe('DELETE /note check', () => {
       .expect(200, notes, done)
   })
 
-  after(done => {
-    Promise.all(
-      notes.map(note =>
-        new Promise(resolve =>
-          request(app)
-            .delete(`/note/${note.id}`)
-            .set('Cookie', `token=${token}`)
-            .expect(200, {
-              noteId: note.id,
-              message: 'Note has been deleted'
-            }, resolve)
-        ))
-    ).then(() => done())
-  })
+  after(() => afterForNotes(token, notes))
 })

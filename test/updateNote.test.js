@@ -1,30 +1,18 @@
 import request from 'supertest'
 
-import { app, createToken, createNote, randomNumber, randomNote, compareNotes } from './utils'
+import { app, randomNumber, compareNotes, beforeForNotes, afterForNotes } from './utils'
 
 describe('PUT /note check', () => {
   let token // access token to the test account
-  const initialNotes = [] // array of the notes that will be created before the suite
+  let initialNotes // array of the notes that will be created before the suite
   const updatedNotes = [] // array of the notes that will be updated in tests
 
   let firstBodyCheck // intermediate variable for /notes body
 
-  before((done) => {
-    // generating test notes for the suite
-    initialNotes.push(randomNote())
-    initialNotes.push(randomNote())
-    initialNotes.push(randomNote())
-
-    // getting token for the account
-    createToken('keepo@mail.com', '456456')
-      .then(t => (token = t))
-      .then(() => Promise.all([ // saving generated notes
-        createNote(token, initialNotes[0]).then(res => (initialNotes[0].id = res.noteId)),
-        createNote(token, initialNotes[1]).then(res => (initialNotes[1].id = res.noteId)),
-        createNote(token, initialNotes[2]).then(res => (initialNotes[2].id = res.noteId))
-      ]))
-      .then(() => done())
-  })
+  before(() => beforeForNotes().then(res => {
+    token = res.token
+    initialNotes = res.notes
+  }))
 
   it('Should update a note and give 200', (done) => {
     // this is how the note should look like after the update
@@ -181,18 +169,5 @@ describe('PUT /note check', () => {
       .expect(200, firstBodyCheck, done)
   })
 
-  after(done => {
-    Promise.all(
-      initialNotes.map(note =>
-        new Promise(resolve =>
-          request(app)
-            .delete(`/note/${note.id}`)
-            .set('Cookie', `token=${token}`)
-            .expect(200, {
-              noteId: note.id,
-              message: 'Note has been deleted'
-            }, resolve)
-        ))
-    ).then(() => done())
-  })
+  after(() => afterForNotes(token, initialNotes))
 })

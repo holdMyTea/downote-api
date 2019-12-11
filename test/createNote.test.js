@@ -1,18 +1,13 @@
 import request from 'supertest'
 
-import { app, createToken, isNoteIdValid, randomNumber, compareNotes } from './utils'
+import { app, createToken, isNoteIdValid, randomNumber, compareNotes, afterForNotes } from './utils'
 
 describe('POST /note check', () => {
   let token
   const createdNotes = []
 
-  before((done) => {
-    createToken('keepo@mail.com', '456456')
-      .then(t => {
-        token = t
-        done()
-      })
-  })
+  before(() => createToken('keepo@mail.com', '456456')
+    .then(t => (token = t)))
 
   it('Should create a note and give 200', (done) => {
     const note = {
@@ -174,18 +169,5 @@ describe('POST /note check', () => {
         }, done)
   })
 
-  after(done => {
-    Promise.all(
-      createdNotes.map(note =>
-        new Promise(resolve =>
-          request(app)
-            .delete(`/note/${note.id}`)
-            .set('Cookie', `token=${token}`)
-            .expect(200, {
-              noteId: note.id,
-              message: 'Note has been deleted'
-            }, resolve)
-        ))
-    ).then(() => done())
-  })
+  after(() => afterForNotes(token, createdNotes))
 })
