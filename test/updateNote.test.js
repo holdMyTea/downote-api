@@ -83,6 +83,9 @@ describe('PUT /note check', () => {
       .end((err, res) => {
         if (err) { throw err }
 
+        // saving current body for a later assertion
+        firstBodyCheck = res.body
+
         // checking that all updated notes are present
         updatedNotes.forEach(note => {
           if (!res.body.find(el => compareNotes(el, note))) {
@@ -96,9 +99,6 @@ describe('PUT /note check', () => {
             throw new Error('The initial note is still present: ' + JSON.stringify(note))
           }
         })
-
-        // saving current body for a later assertion
-        firstBodyCheck = res.body
         done()
       })
   })
