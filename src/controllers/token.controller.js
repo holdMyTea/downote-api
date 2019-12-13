@@ -7,7 +7,19 @@ import token from '../db/token.db'
 
 const isEmailValid = email => /(\w)+@(\w)+\.{1}\w{1,5}/.test(email)
 
-const create = asyncHandler(async (req, res) => {
+/**
+ * @typedef {Object} CreateTokenBody
+ * @property {string} email - User's email
+ * @property {string} pass - User's password
+ */
+
+/**
+ * POST /token controller
+ * Creates access token for the user.
+ * @param {Object} req - incoming request
+ * @param {CreateTokenBody} req.body - body of the incoming request
+ */
+const create = async (req, res) => {
   const { email, pass } = req.body
 
   if (isEmailValid(email) && pass) {
@@ -41,9 +53,21 @@ const create = asyncHandler(async (req, res) => {
   } else {
     res.status(400).json({ error: 'Required parameters are missing' })
   }
-})
+}
 
-const verify = asyncHandler(async (req, res) => {
+/**
+ * @typedef {Object} TokenRequestData
+ * @property {string} token - Access token
+ */
+
+/**
+ * POST /token/verify controller
+ * Responds with the current status of the token from body or cookies.
+ * @param {Object} req - incoming request
+ * @param {TokenRequestData} [req.body] - body of the incoming request
+ * @param {TokenRequestData} [req.cookies] - cookies of the incoming request
+ */
+const verify = async (req, res) => {
   const t = validateToken(req.cookies, req.body)
   if (!t) {
     res.status(400).json({ error: 'Token in missing or invalid' })
@@ -63,9 +87,16 @@ const verify = asyncHandler(async (req, res) => {
   }
 
   res.status(200).json({ message: 'Valid token' })
-})
+}
 
-const remove = asyncHandler(async (req, res) => {
+/**
+ * DELETE /token controller
+ * Deletes the token from body or cookies from db.
+ * @param {Object} req - incoming request
+ * @param {TokenRequestData} [req.body] - body of the incoming request
+ * @param {TokenRequestData} [req.cookies] - cookies of the incoming request
+ */
+const remove = async (req, res) => {
   const t = validateToken(req.cookies, req.body)
 
   let result
@@ -86,10 +117,10 @@ const remove = asyncHandler(async (req, res) => {
       .clearCookie('token', { path: '/' })
       .json({ message: 'Token doesn\'t exist' })
   }
-})
+}
 
 export default {
-  create,
-  verify,
-  remove
+  create: asyncHandler(create),
+  verify: asyncHandler(verify),
+  remove: asyncHandler(remove)
 }

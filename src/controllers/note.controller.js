@@ -4,7 +4,26 @@ import asyncHandler from 'express-async-handler'
 import note from '../db/note.db'
 import findUser from '../helpers/findUser'
 
-const addNote = asyncHandler(async (req, res) => {
+/**
+ * @typedef {Object} NoteRequestCookie
+ * @property {string} token - Access token
+ */
+
+/**
+ * @typedef {Object} AddNoteBody
+ * @property {string} [header] - header of the new note
+ * @property {string} [text] - text of the new note
+ * @property {number} order - display order of the new note
+ */
+
+/**
+ * POST /note controller
+ * Saves incoming note to the database and returns new 'noteId' or error message.
+ * @param {Object} req - incoming request
+ * @param {NoteRequestCookie} req.cookies - cookies of the incoming request
+ * @param {AddNoteBody} req.body - body of the incoming request
+ */
+const addNote = async (req, res) => {
   const userId = await findUser(req, res)
   if (!userId) {
     return
@@ -31,9 +50,28 @@ const addNote = asyncHandler(async (req, res) => {
   } else {
     res.status(400).json({ error: 'Request should contain "order" AND ("header" OR "text")' })
   }
-})
+}
 
-const updateNote = asyncHandler(async (req, res) => {
+/**
+ * @typedef {Object} NoteRequestParams
+ * @property {number} noteId - Id of the note
+ */
+
+/**
+ * @typedef {Object} UpdateNoteBody
+ * @property {string} [header] - header of the new note
+ * @property {string} [text] - text of the new note
+ */
+
+/**
+ * PUT /note controller
+ * Updates note's headers and text, sets them to null if either is not provided.
+ * @param {Object} req - incoming request
+ * @param {NoteRequestParams} req.params - URL params of the incoming request
+ * @param {NoteRequestCookie} req.cookies - cookies of the incoming request
+ * @param {UpdateNoteBody} req.body - body of the incoming request
+ */
+const updateNote = async (req, res) => {
   const userId = await findUser(req, res)
   if (!userId) {
     return
@@ -72,9 +110,16 @@ const updateNote = asyncHandler(async (req, res) => {
   } else {
     res.status(400).json({ error: 'Request should contain "header" OR "text"' })
   }
-})
+}
 
-const deleteNote = asyncHandler(async (req, res) => {
+/**
+ * DELETE /note controller
+ * Deletes note from the database.
+ * @param {Object} req - incoming request
+ * @param {NoteRequestParams} req.params - URL params of the incoming request
+ * @param {NoteRequestCookie} req.cookies - cookies of the incoming request
+ */
+const deleteNote = async (req, res) => {
   const userId = await findUser(req, res)
   if (!userId) {
     return
@@ -107,10 +152,10 @@ const deleteNote = asyncHandler(async (req, res) => {
   } else {
     res.status(400).json({ error: 'Note id is not specified' })
   }
-})
+}
 
 export default {
-  addNote,
-  updateNote,
-  deleteNote
+  addNote: asyncHandler(addNote),
+  updateNote: asyncHandler(updateNote),
+  deleteNote: asyncHandler(deleteNote)
 }

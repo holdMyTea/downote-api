@@ -4,7 +4,18 @@ import asyncHandler from 'express-async-handler'
 import notes from '../db/notes.db'
 import findUser from '../helpers/findUser'
 
-const getAll = asyncHandler(async (req, res) => {
+/**
+ * @typedef {Object} NoteRequestCookie
+ * @property {string} token - Access token
+ */
+
+/**
+ * GET /notes controller
+ * Returns the array of all notes present in user's account.
+ * @param {Object} req - incoming request
+ * @param {NoteRequestCookie} req.cookies - cookies of the incoming request
+ */
+const getAll = async (req, res) => {
   const userId = await findUser(req, res)
   if (!userId) {
     return
@@ -27,9 +38,27 @@ const getAll = asyncHandler(async (req, res) => {
   }))
 
   res.status(200).json(formattedResponse)
-})
+}
 
-const reorder = asyncHandler(async (req, res) => {
+/**
+ * @typedef {Object} NoteForReorder
+ * @property {number} id - Id of the note
+ * @property {number} order - The new display order of note
+ */
+
+/**
+ * @typedef {Object} ReorderNotesBody
+ * @property {NoteForReorder[]} newOrder - updated order for notes
+ */
+
+/**
+ * PUT /notes/reorder controller
+ * Updates the order of the notes.
+ * @param {Object} req - incoming request
+ * @param {NoteRequestCookie} req.cookies - cookies of the incoming request
+ * @param {ReorderNotesBody} req.body - body of the incoming request
+ */
+const reorder = async (req, res) => {
   const userId = await findUser(req, res)
   if (!userId) {
     return
@@ -79,9 +108,9 @@ const reorder = asyncHandler(async (req, res) => {
   } else {
     res.status(400).json({ error: 'Wrong body, should be { "newOrder": [] }' })
   }
-})
+}
 
 export default {
-  getAll,
-  reorder
+  getAll: asyncHandler(getAll),
+  reorder: asyncHandler(reorder)
 }
