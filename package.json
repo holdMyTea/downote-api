@@ -1,21 +1,21 @@
 {
-  "name": "dwn-api",
+  "name": "downnote-api",
   "version": "1.0.0",
   "repository": "https://github.com/holdMyTea/downote-api.git",
   "description": "API for DowNote",
   "main": "index.js",
   "scripts": {
     "start": "babel-node src/index.js",
-    "test": "mocha --require @babel/polyfill --require @babel/register"
+    "test": "NODE_ENV=test mocha --require @babel/polyfill --require @babel/register"
   },
-  "author": "rise42",
+  "author": "holdMyTea",
   "license": "ISC",
   "dependencies": {
-    "aes-js": "^3.1.2",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.4",
-    "moment": "^2.24.0",
+    "express-async-handler": "^1.1.4",
+    "http-errors": "^1.7.3",
     "morgan": "^1.9.1",
     "mysql": "^2.16.0"
   },
@@ -26,7 +26,13 @@
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.1.6",
     "@babel/register": "^7.0.0",
+    "eslint": "^6.1.0",
     "mocha": "^5.2.0",
-    "supertest": "^3.4.2"
+    "supertest": "^3.4.2",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-standard": "^4.0.0"
   }
 }

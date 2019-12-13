@@ -5,23 +5,9 @@ CREATE TABLE downote.users (
   creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-DELIMITER $$
-CREATE PROCEDURE downote.insert_user (
-  IN in_email VARCHAR(50),
-  IN in_password VARCHAR(50)
-) BEGIN
-  INSERT INTO downote.users (email, password) VALUES (in_email, in_password);
-END$$
-
-CREATE PROCEDURE downote.find_user (
-  IN in_email VARCHAR(50)
-) BEGIN
-  SELECT * FROM downote.users WHERE email = in_email;
-END$$
-
-DELIMITER ;
-CALL downote.insert_user ('kappa@mail.com', '123123');
-CALL downote.insert_user ('keepo@mail.com', '456456');
-CALL downote.insert_user ('kippa@mail.com', '789789');
+INSERT INTO downote.users (email, password) VALUES
+  ('kappa@mail.com', '123123'),
+  ('keepo@mail.com', '456456'),
+  ('kippa@mail.com', '789789');
 
 SELECT * FROM downote.users;
