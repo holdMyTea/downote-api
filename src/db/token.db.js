@@ -1,5 +1,11 @@
 import db from './index'
 
+/**
+ * Saves a token associated with the user.
+ * @param {string} token - token to save
+ * @param {number} userId - user to associate the token with
+ * @returns {Promise}
+ */
 const save = (token, userId) => db.query(
   `INSERT INTO downote.tokens (id, expires_on, user_id) VALUES(
     '${token}',
@@ -8,8 +14,13 @@ const save = (token, userId) => db.query(
   );`
 )
 
+/**
+ * Runs a query for token.
+ * @param {string} token - token to check
+ * @returns {Promise}
+ */
 const check = token => db.query(
-  `DELETE FROM tokens WHERE id = BINARY "${token}" AND expires_on < CURRENT_TIMESTAMP;`
+  `DELETE FROM tokens WHERE expires_on < CURRENT_TIMESTAMP;`
 )
   .then(
     () => db.query(`SELECT * FROM tokens WHERE id = BINARY "${token}" LIMIT 1;`)
@@ -21,7 +32,12 @@ const check = token => db.query(
     return undefined
   })
 
-const remove = (token) => db.query(`DELETE FROM downote.tokens WHERE id = '${token}';`)
+/**
+ * Removes token from db.
+ * @param {string} token
+ * @returns {Promise}
+ */
+const remove = token => db.query(`DELETE FROM downote.tokens WHERE id = '${token}';`)
 
 export default {
   save,

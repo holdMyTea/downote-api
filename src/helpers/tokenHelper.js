@@ -5,6 +5,11 @@ const charDictionary = // An array of charcodes [a-zA-Z0-9]
       Array(26).fill(0).map((value, index) => 97 + index) // [a-z]
     )
 
+/**
+ * Generates a random string [a-zA-Z0-9] of given length
+ * @param {number} [tokenLenght=40] - length of token
+ * @returns {string} token
+ */
 const createToken = (tokenLenght = 40) => // Generates a random string
   String.fromCharCode.apply(null,
     Array(tokenLenght).fill(0).map(value =>
@@ -14,6 +19,14 @@ const createToken = (tokenLenght = 40) => // Generates a random string
 
 const isTokenValid = (token) => /\w{40}/.test(token)
 
+/**
+ * Checks provided body and cookies objects for a token, ensures there's no conlicts.
+ * @param {Object} cookies - cookies object
+ * @param {string} cookies.token - prop to be checked
+ * @param {Object} body - body object
+ * @param {string} body.token - prop to be checked
+ * @returns {string|undefined} token string or undefined
+ */
 const resolveToken = (cookies, body) => {
   if ((body && body.token) && (cookies && cookies.token)) {
     if (body.token === cookies.token) {
@@ -29,9 +42,9 @@ const resolveToken = (cookies, body) => {
 
 /**
    * Checks tokens from body and cookies of the request.
-   * @param body body of the request
-   * @param cookies cookies from the request
-   * @returns a valid token or ''
+   * @param {Object} body body object of the request
+   * @param {Object} cookies cookies object from the request
+   * @returns {string|undefined} a valid token or undefined
    */
 const validateToken = (body, cookies) => {
   const token = resolveToken(body, cookies)

@@ -1,14 +1,26 @@
 import db from './index'
 
-const create = (header, text, order, userId) => {
-  const line1 = `INSERT INTO notes(${header ? 'note_header, ' : ''}${text ? 'note_text, ' : ''}note_order, user_id)`
-  const line2 = ` VALUES(${header ? '\'' + header + '\', ' : ''}${text ? '\'' + text + '\', ' : ''}${order}, ${userId});`
+/**
+ * Runs a create note query to the db.
+ * @param {string} [header] - note's header, will be set to null if not provided.
+ * @param {string} [text] - note's text, will be set to null if not provided.
+ * @param {number} order - note's display order
+ * @param {number} userId
+ * @returns {Promise}
+ */
+const create = (header, text, order, userId) => db.query(
+  `INSERT INTO notes(${header ? 'note_header, ' : ''}${text ? 'note_text, ' : ''}note_order, user_id)
+   VALUES(${header ? '\'' + header + '\', ' : ''}${text ? '\'' + text + '\', ' : ''}${order}, ${userId});`
+)
 
-  return db.query(
-    line1 + line2
-  )
-}
-
+/**
+ * Runs an update note query to the db.
+ * @param {number} id - note's id
+ * @param {string} [header] - note's header, will be set to null if not provided.
+ * @param {string} [text] - note's text, will be set to null if not provided.
+ * @param {number} userId
+ * @returns {Promise}
+ */
 const update = (id, header, text, userId) => db.query(
   `UPDATE notes SET
   note_header = ${header ? '\'' + header + '\'' : null},
@@ -17,6 +29,12 @@ const update = (id, header, text, userId) => db.query(
   WHERE id = ${id} AND user_id = ${userId};`
 )
 
+/**
+ * Runs a delete note query to the db.
+ * @param {number} id - note's id
+ * @param {number} userId
+ * @returns {Promise}
+ */
 const remove = (id, userId) => db.query(
   `DELETE FROM downote.notes WHERE id = ${id} AND user_id = ${userId} LIMIT 1;`
 )

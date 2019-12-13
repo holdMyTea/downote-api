@@ -11,7 +11,7 @@
 - ~~Add clear messages~~
 - ~~Normalize imports~~
 - ~~Make real NULL in SQL~~
-- Docs
+- ~~Docs~~
 - ~~Throw out moment~~
 - ~~Tests~~
 - ~~Clean up before() and after()~~

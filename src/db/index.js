@@ -10,10 +10,17 @@ const connection = mysql.createConnection({
   database: env.MYSQL_DATABASE
 })
 
-const connectToDatabase = (callback) => {
-  setTimeout(() => { connection.connect(callback) }, 1000)
-}
+/**
+ * Connects to database and calls 'callback' once connected.
+ * @param {function} callback
+ */
+const connectToDatabase = callback => connection.connect(callback)
 
+/**
+ * Sends a query to database.
+ * @param {string} q - SQL query to be run
+ * @returns {Promise} pending promise with the result of query
+ */
 const query = q =>
   new Promise((resolve, reject) =>
     connection.query(
