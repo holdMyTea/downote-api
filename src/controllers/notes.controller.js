@@ -71,7 +71,7 @@ const reorder = async (req, res) => {
     const orderSet = new Set()
 
     body.newOrder.forEach((i, index) => {
-      if (!(i.id && i.order)) {
+      if (!(i.id && Number.isInteger(i.order))) {
         res.status(400).json({ error: `Object under ${index} index doesn't have required params` })
         return
       }
