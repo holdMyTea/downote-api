@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec \"babel-node src/index.js\"",
-    "test": "NODE_ENV=test jest"
+    "test": "NODE_ENV=test jest --runInBand --forceExit"
   },
   "author": "holdMyTea",
   "license": "ISC",
