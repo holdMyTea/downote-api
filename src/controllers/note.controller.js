@@ -30,7 +30,7 @@ const addNote = async (req, res) => {
   }
 
   const body = req.body
-  if (body.order && (body.header || body.text)) {
+  if (Number.isInteger(body.order) && (body.header || body.text)) {
     let record
     try {
       record = await note.create(

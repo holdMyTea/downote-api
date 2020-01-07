@@ -9,7 +9,7 @@ describe('PUT /note check', () => {
 
   let firstBodyCheck // intermediate variable for /notes body
 
-  before(() => beforeForNotes().then(res => {
+  beforeAll(() => beforeForNotes().then(res => {
     token = res.token
     initialNotes = res.notes
   }))
@@ -169,5 +169,5 @@ describe('PUT /note check', () => {
       .expect(200, firstBodyCheck, done)
   })
 
-  after(() => afterForNotes(token, initialNotes))
+  afterAll(() => afterForNotes(token, initialNotes))
 })

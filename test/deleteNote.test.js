@@ -6,7 +6,7 @@ describe('DELETE /note check', () => {
   let token // access token to the test account
   let notes // array of the notes that will be created before the suite
 
-  before(() => beforeForNotes().then(res => {
+  beforeAll(() => beforeForNotes().then(res => {
     token = res.token
     notes = res.notes
   }))
@@ -73,5 +73,5 @@ describe('DELETE /note check', () => {
       .expect(200, notes, done)
   })
 
-  after(() => afterForNotes(token, notes))
+  afterAll(() => afterForNotes(token, notes))
 })

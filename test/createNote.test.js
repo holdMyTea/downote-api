@@ -6,7 +6,7 @@ describe('POST /note check', () => {
   let token
   const createdNotes = []
 
-  before(() => createToken('keepo@mail.com', '456456')
+  beforeAll(() => createToken('keepo@mail.com', '456456')
     .then(t => (token = t)))
 
   it('Should create a note and give 200', (done) => {
@@ -169,5 +169,5 @@ describe('POST /note check', () => {
         }, done)
   })
 
-  after(() => afterForNotes(token, createdNotes))
+  afterAll(() => afterForNotes(token, createdNotes))
 })
